@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>設定營養標籤</title>
+</head>
+<body>
+    <h1>營養標籤設定</h1>
+    
+    <form action="/nutritionFacts/" method="post">
+        {% csrf_token %}
+        標籤名稱 <input type="text" name="nutritionName" required/><br><br>
+        
+        起始位置 <input type="text" name="nutritionX" placeholder="X mm" required/><nbsp>
+        <input type="text" name="nutritionY" placeholder="Y mm" required/><br><br>
+        
+        每一份量 <input type="text" name="weight" placeholder="每一份量(克)" required/><br><br>
+        
+        本包裝含 <input type="text" name="servings" placeholder="本包裝含(份)" required/><br><br>
+        <!--  heat, portain, fat, saturated, trans, carbohydrate, sugar, sodium -->
+        {% for option ,value in options.items %} 
+            {% if option == "sodium"%}
+                鈉 <nbsp><input type="text" name="options" placeholder="毫克" required><br><br>
+            {% elif option == "heat" %}
+                {{value}} <input type="text" name="options" placeholder="大卡" required><br><br>
+            {% else %}
+                {{value}} <input type="text" name="options" placeholder="公克" required><br><br>
+            {% endif %}
+        {% endfor %}
+        <button type="submit" value="{{options}}" name="optionList">建立標籤</button>
+    </form>
+</body>
+</html>
