@@ -1,4 +1,4 @@
-# labelPrinter
+# 條碼印表機
 
 ## 布署資訊
 ### 1. 使用GitHub Webhook觸發[Jenkins](http://scs.cs.thu.edu.tw:8090/)
