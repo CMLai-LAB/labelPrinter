@@ -1,0 +1,23 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: labelprinter
+  labels:
+    app: labelprinter
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: labelprinter
+  template:
+    metadata:
+      labels:
+        app: labelprinter
+    spec:
+      containers:
+        - name: labelprinter-django
+          image: labelprinter:latest
+          imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: 8000
+              name: labelprinter
