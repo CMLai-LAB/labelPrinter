@@ -122,3 +122,9 @@ STATIC_URL = 'static/'
 # https://docs.djangoproject.com/en/4.2/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+# Added trusted origin for deployment
+CSRF_TRUSTED_ORIGINS = [
+    'https://scs.cs.thu.edu.tw:8000',
+    'https://demo.jtx.com.tw:8000',
+]
