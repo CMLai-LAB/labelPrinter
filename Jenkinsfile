@@ -13,6 +13,7 @@ pipeline {
                 dir('deployment') {
                     sh 'kubectl apply -f deployment.yaml'
                     sh 'kubectl apply -f labelPrinter-Svc.yaml'
+                    sh 'kubectl rollout restart deployment labelprinter'
                 }
             }
         }
