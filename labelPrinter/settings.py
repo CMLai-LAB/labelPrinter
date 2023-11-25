@@ -128,3 +128,4 @@ CSRF_TRUSTED_ORIGINS = [
     'https://scs.cs.thu.edu.tw:8000',
     'https://demo.jtx.com.tw:8000',
 ]
+SECURE_PROXY_SSL_HEADER = ("HTTP_X_FORWARDED_PROTOCOL", "https")
