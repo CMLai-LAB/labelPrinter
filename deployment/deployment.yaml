@@ -16,7 +16,7 @@ spec:
     spec:
       containers:
         - name: labelprinter-django
-          image: labelprinter:latest
+          image: 172.23.8.1:9500/labelprinter:latest
           imagePullPolicy: IfNotPresent
           ports:
             - containerPort: 8000

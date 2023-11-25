@@ -4,7 +4,7 @@ pipeline {
         stage('Build the docker image inside minikube docker insntance') {
             steps {
                 sh 'eval $(minikube docker-env)'
-                sh 'docker build . -t labelprinter:latest --no-cache'
+                sh 'docker build . -t 172.23.8.1:9500/labelprinter:latest --no-cache'
             }
         }
 
