@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Print Label</title>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+</head>
+<body>
+    <h1>{{paperName}}</h1>
+    <h3>{{paperSize}}</h3>
+    <h3>{{density}}</h3>
+
+    <a href="/textSettings">
+        <button>新增文字</button>
+    </a>
+    <br><br>
+
+    <a href="/qrSettings">
+        <button>新增QRcode</button>
+    </a>
+    <br><br>
+
+    <a href="/nutritionOption">
+        <button>新增營養標籤</button>   
+    </a>
+    <br><br>
+
+    <a href="/printSettings">
+        <button>列印</button>
+    </a>
+    <br><br>
+    <p id="positon" style="display: none;">{{positionDict}}</p> 
+
+    <h3>
+        ---------------------------------------
+    </h3>  
+    <h2>已建立 : </h2>
+
+    <div style="position:absolute; left:30px; top:430px;">
+        <br>
+        {% for item, type in createdList.items %}
+            {{item}} ({{type}}) 
+            <form style="position: relative; left: 10%;" action="/deleteItem/" method="post">
+                {% csrf_token %}
+                <button name="deleteItemButton" value={{item}}>刪除</button><br><br>
+            </form>
+        {% endfor %}
+    </div>
+   
+    <canvas id="myCanvas" width="410" height="320" style="border:1px solid #000000; position:absolute; right:200px; top: 100px;"></canvas>
+    <script>
+        var canvas = document.getElementById("myCanvas");
+        var ctx = canvas.getContext("2d");
+        $.ajax({
+            url: "/drawOnHtml",
+            type: "GET",
+            data: {
+                "message": "hello"
+            },
+            success: function(response){
+                for (k in response){
+                    if (response[k]["type"]=="文字"){
+                        var size = response[k]["size"];
+                        var content = response[k]["content"];
+                        var x = response[k]["X"];
+                        var y = response[k]["Y"];
+                        ctx.font = String(size*5+5)+"px Arial";
+                        ctx.fillText(content,x/1.9,y/2.1);
+                    }else if(response[k]["type"]=="QRcode"){
+                        var width = response[k]["width"];
+                        var name = k;
+                        var x = response[k]["X"] / 2;
+                        var y = response[k]["Y"] / 2;
+                        ctx.font = "10px Arial";
+                        ctx.fillText("QRcode:",x+width*5,y+width*10);
+                        ctx.fillText("("+k+")",x+width*8,y+width*15);
+                        ctx.rect(x,y,25*width,25*width);
+                        ctx.stroke();
+
+                    }else if(response[k]["type"]=="營養標籤"){
+                        var x = response[k]["X"] / 2;
+                        var y = response[k]["Y"] / 2.3;
+                        var weight = response[k]["weight"].toString();
+                        var servings = response[k]["servings"].toString();
+                        var length = Object.keys(response[k]).length - 5;
+                        var width = Object.keys(response[k]).length
+                        // 最大方形
+                        ctx.rect(x,y,200,70+length*17);
+                        ctx.stroke();
+                        // 最大方形內第一條線
+                        ctx.moveTo(x,y+25);
+                        ctx.lineTo(x+200,y+25);
+                        ctx.stroke();
+                        // 最大方形內大二條線
+                        ctx.moveTo(x,y+60);
+                        ctx.lineTo(x+200,y+60);
+                        ctx.stroke();
+                        // 最大方形內第三條線
+                        ctx.moveTo(x,y+80);
+                        ctx.lineTo(x+200,y+80);
+                        ctx.stroke();
+                        // Nutritions Facts
+                        ctx.font = "11px Arial";
+                        ctx.fillText("Nutrition Facts",x+35,y+20);
+                        //  Servings Per Container
+                        ctx.font = "11px Arial";
+                        ctx.fillText('每一份量'+weight+'公克',x+5,y+40);
+                        // servings size
+                        ctx.font = "11px Arial";
+                        ctx.fillText('本包裝含 '+servings+'package',x+5,y+55);
+                        // 1 pack
+                        ctx.font = "11px Arial";
+                        ctx.fillText("每份",x+100,y+75);
+                        // 100g
+                        ctx.font = "11px Arial";
+                        ctx.fillText("每100公克",x+145,y+75);
+                        // 營養標籤內容
+                        for (m in response[k]){
+                            if (m != "type" && m != "X" && m != "Y" && m != "weight" && m != "servings"){
+                                console.log(response[k][m]);
+                                if (m == "heat"){
+                                    ctx.fillText(response[k][m]+"大卡",x+95,(y+50+length*17)-(width-1)*14);
+                                    ctx.fillText(parseInt(response[k][m]/Number(weight)*100).toString()+"大卡",x+150,(y+50+length*17)-(width-1)*14);
+                                    m = "熱量";
+                                    ctx.fillText(m,x+5,(y+50+length*17)-(width-1)*14);
+                                }else if(m == "saturated" | m =="trans" | m == "sugar"){
+                                    ctx.fillText(response[k][m]+"公克",x+95,(y+50+length*17)-(width-1)*14);
+                                    ctx.fillText(parseInt(response[k][m]/Number(weight)*100).toString()+"公克",x+150,(y+50+length*17)-(width-1)*14);
+                                    if (m == "saturated"){
+                                        m = "飽和脂肪";
+                                    }else if (m == "trans"){
+                                        m = "反式脂肪";
+                                    }else{
+                                        m = "糖";
+                                    }
+                                    ctx.fillText(m,x+15,(y+50+length*17)-(width-1)*14);
+                                    
+                                }else if(m == "sodium"){
+                                    ctx.fillText(response[k][m]+"毫克",x+95,(y+50+length*17)-(width-1)*14);
+                                    ctx.fillText(parseInt(response[k][m]/Number(weight)*100).toString()+"毫克",x+150,(y+50+length*17)-(width-1)*14);
+                                    m = "鈉";
+                                    ctx.fillText(m,x+5,(y+50+length*17)-(width-1)*14);
+
+                                }else{
+                                    ctx.fillText(response[k][m]+"公克",x+95,(y+50+length*17)-(width-1)*14);
+                                    ctx.fillText(parseInt(response[k][m]/Number(weight)*100).toString()+"公克",x+150,(y+50+length*17)-(width-1)*14);
+                                    if (m == "portain"){
+                                        m = "蛋白質";
+                                    }else if (m == "fat"){
+                                        m = "脂肪";
+                                    }else if (m == "carbohydrate"){
+                                        m = "碳水化合物";
+                                    }else if (m == "cholesterol"){
+                                        m = "膽固醇";
+                                    }else if (m == "amino"){
+                                        m = "胺基酸";
+                                    }else if (m == "vitamins"){
+                                        m = "維生素";
+                                    }else if (m == "minerals"){
+                                        m = "礦物質";
+                                    }else if (m == "fiber"){
+                                        m = "膳食纖維";
+                                    }else if (m == "potassium"){
+                                        m = "鉀";
+                                    }else if (m == "calcium"){
+                                        m = "鈣";
+                                    }else if (m == "iron"){
+                                        m = "鐵";
+                                    }
+                                    
+                                    ctx.fillText(m,x+5,(y+50+length*17)-(width-1)*14);
+                                }
+                                
+                            }
+                            width -= 1;
+                        }
+                    }
+                }    
+            },
+            error: function(error){
+                console.log(error);
+            }
+        });
+
+    </script>
+</body>
+</html>
