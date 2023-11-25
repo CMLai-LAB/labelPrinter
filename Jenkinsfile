@@ -1,9 +1,10 @@
 pipeline {
     agent any
     stages {
-        stage('Build the docker image inside minikube docker insntance') {
+        stage('Build the docker image and push to registry.') {
             steps {
                 sh 'docker build . -t 172.23.8.1:9500/labelprinter:latest --no-cache'
+                sh 'docker image push 172.23.8.1:9500/labelprinter:latest'
             }
         }
 
