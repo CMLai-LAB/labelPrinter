@@ -21,18 +21,18 @@ def setup(request):
 
     tsclibrary = ctypes.WinDLL("/printLabel/TSCLIB.dll")
     # Connect to printer and .dll
-    try:
-        currentPath = os.getcwd()
-        # tsclibrary = ctypes.WinDLL("/printLabel/TSCLIB.dll")
-        tsclibrary = ctypes.CDLL("/printLabel/TSCLIB.dll")
-        # tsclibrary = ctypes.WinDLL("./printLabel/tsclibnet.dll")
-        tsclibrary.openportW("USB")
+    # try:
+    #     currentPath = os.getcwd()
+    #     # tsclibrary = ctypes.WinDLL("/printLabel/TSCLIB.dll")
+    #     tsclibrary = ctypes.CDLL("/printLabel/TSCLIB.dll")
+    #     # tsclibrary = ctypes.WinDLL("./printLabel/tsclibnet.dll")
+    #     tsclibrary.openportW("USB")
         
-    except:
-        currentPath = os.getcwd()
+    # except:
+    #     currentPath = os.getcwd()
         
-        print("open port fail")
-        return render(request,'index.html',{"warning":"沒有連接標籤機 "+currentPath,"dir":os.listdir(currentPath+"/printLabel")})
+    #     print("open port fail")
+    #     return render(request,'index.html',{"warning":"沒有連接標籤機 "+currentPath,"dir":os.listdir(currentPath+"/printLabel")})
 
     # Setup printer
     tsclibrary.sendcommandW("DENSITY "+str(density))
