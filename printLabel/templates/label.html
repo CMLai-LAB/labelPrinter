@@ -114,13 +114,13 @@
                             if (m != "type" && m != "X" && m != "Y" && m != "weight" && m != "servings"){
                                 console.log(response[k][m]);
                                 if (m == "heat"){
-                                    ctx.fillText(response[k][m]+"大卡",x+95,(y+50+length*17)-(width-1)*14);
-                                    ctx.fillText(parseInt(response[k][m]/Number(weight)*100).toString()+"大卡",x+150,(y+50+length*17)-(width-1)*14);
+                                    ctx.fillText(response[k][m]+"大卡",x+95,(y+50+length*17)-(width-1)*13.5);
+                                    ctx.fillText(parseInt(response[k][m]/Number(weight)*100).toString()+"大卡",x+150,(y+50+length*17)-(width-1)*13.5);
                                     m = "熱量";
-                                    ctx.fillText(m,x+5,(y+50+length*17)-(width-1)*14);
+                                    ctx.fillText(m,x+5,(y+50+length*17)-(width-1)*13.5);
                                 }else if(m == "saturated" | m =="trans" | m == "sugar"){
-                                    ctx.fillText(response[k][m]+"公克",x+95,(y+50+length*17)-(width-1)*14);
-                                    ctx.fillText(parseInt(response[k][m]/Number(weight)*100).toString()+"公克",x+150,(y+50+length*17)-(width-1)*14);
+                                    ctx.fillText(response[k][m]+"公克",x+95,(y+50+length*17)-(width-1)*13.5);
+                                    ctx.fillText(parseInt(response[k][m]/Number(weight)*100).toString()+"公克",x+150,(y+50+length*17)-(width-1)*13.5);
                                     if (m == "saturated"){
                                         m = "飽和脂肪";
                                     }else if (m == "trans"){
@@ -128,17 +128,17 @@
                                     }else{
                                         m = "糖";
                                     }
-                                    ctx.fillText(m,x+15,(y+50+length*17)-(width-1)*14);
+                                    ctx.fillText(m,x+15,(y+50+length*17)-(width-1)*13.5);
                                     
                                 }else if(m == "sodium"){
-                                    ctx.fillText(response[k][m]+"毫克",x+95,(y+50+length*17)-(width-1)*14);
-                                    ctx.fillText(parseInt(response[k][m]/Number(weight)*100).toString()+"毫克",x+150,(y+50+length*17)-(width-1)*14);
+                                    ctx.fillText(response[k][m]+"毫克",x+95,(y+50+length*17)-(width-1)*13.5);
+                                    ctx.fillText(parseInt(response[k][m]/Number(weight)*100).toString()+"毫克",x+150,(y+50+length*17)-(width-1)*13.5);
                                     m = "鈉";
-                                    ctx.fillText(m,x+5,(y+50+length*17)-(width-1)*14);
+                                    ctx.fillText(m,x+5,(y+50+length*17)-(width-1)*13.5);
 
                                 }else{
-                                    ctx.fillText(response[k][m]+"公克",x+95,(y+50+length*17)-(width-1)*14);
-                                    ctx.fillText(parseInt(response[k][m]/Number(weight)*100).toString()+"公克",x+150,(y+50+length*17)-(width-1)*14);
+                                    ctx.fillText(response[k][m]+"公克",x+95,(y+50+length*17)-(width-1)*13.5);
+                                    ctx.fillText(parseInt(response[k][m]/Number(weight)*100).toString()+"公克",x+150,(y+50+length*17)-(width-1)*13.5);
                                     if (m == "portain"){
                                         m = "蛋白質";
                                     }else if (m == "fat"){
@@ -163,7 +163,7 @@
                                         m = "鐵";
                                     }
                                     
-                                    ctx.fillText(m,x+5,(y+50+length*17)-(width-1)*14);
+                                    ctx.fillText(m,x+5,(y+50+length*17)-(width-1)*13.5);
                                 }
                                 
                             }
