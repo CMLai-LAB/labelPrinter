@@ -5,6 +5,7 @@ from django.http import JsonResponse
 from django.shortcuts import render, HttpResponse
 import ctypes
 import json
+import os
 
 # Create your views here.
 
@@ -20,12 +21,17 @@ def setup(request):
 
     # Connect to printer and .dll
     try:
+        currentPath = os.getcwd()
+        print("currentPath : ",currentPath)
         tsclibrary = ctypes.WinDLL("./printLabel/TSCLIB.dll")
         # tsclibrary = ctypes.WinDLL("./printLabel/tsclibnet.dll")
         tsclibrary.openportW("USB")
+        
     except:
+        currentPath = os.getcwd()
+        print("currentPath : ",currentPath)
         print("open port fail")
-        return render(request,'index.html',{"warning":"沒有連接標籤機"})
+        return render(request,'index.html',{"warning":"沒有連接標籤機'\n'%s"%currentPath})
 
     # Setup printer
     tsclibrary.sendcommandW("DENSITY "+str(density))
