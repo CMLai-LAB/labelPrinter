@@ -17,16 +17,16 @@ def setup(request):
     density = request.POST.get('density')
     paperName = request.POST.get('paperName')
     # Declare tsclibrary as global variable
-    global tsclibrary 
+    # global tsclibrary 
 
     # tsclibrary = ctypes.CDLL("./printLabel/TSCLIB.dll")
     # Connect to printer and .dll
     # try:
     #     currentPath = os.getcwd()
-    #     # tsclibrary = ctypes.WinDLL("/printLabel/TSCLIB.dll")
-    #     tsclibrary = ctypes.CDLL("/printLabel/TSCLIB.dll")
-    #     # tsclibrary = ctypes.WinDLL("./printLabel/tsclibnet.dll")
-    #     tsclibrary.openportW("USB")
+        # tsclibrary = ctypes.WinDLL("/printLabel/TSCLIB.dll")
+        # tsclibrary = ctypes.CDLL("/printLabel/TSCLIB.dll")
+        # tsclibrary = ctypes.WinDLL("./printLabel/tsclibnet.dll")
+        # tsclibrary.openportW("USB")
         
     # except:
     #     currentPath = os.getcwd()
@@ -35,10 +35,10 @@ def setup(request):
     #     return render(request,'index.html',{"warning":"沒有連接標籤機 "+currentPath,"dir":os.listdir(currentPath+"/printLabel")})
 
     # Setup printer
-    tsclibrary.sendcommandW("DENSITY "+str(density))
-    tsclibrary.sendcommandW("SIZE " + str(paperWidth) +" mm, " + str(paperHeight) +" mm")
-    tsclibrary.clearbuffer()
-    tsclibrary.sendcommandW("CLS")
+    # tsclibrary.sendcommandW("DENSITY "+str(density))
+    # tsclibrary.sendcommandW("SIZE " + str(paperWidth) +" mm, " + str(paperHeight) +" mm")
+    # tsclibrary.clearbuffer()
+    # tsclibrary.sendcommandW("CLS")
 
     with open("./printLabel/commandTxt/"+str(paperName)+".json","w",encoding='utf-8') as labelMessage:
         json.dump({"%s"%paperName:{"paperWidth":paperWidth,"paperHeight":paperHeight,"density":density}},labelMessage)
@@ -84,44 +84,42 @@ def nutritionFacts(request):
             json.dump(labelMessage,jsonFile)
     length = len(option)
     # BOX
-    tsclibrary.sendcommandW('TEXT '+str(X+80)+','+str(Y+20)+',"chinese",0,1,1,"Nutrition Facts"')
-    tsclibrary.sendcommandW('BOX '+str(X)+', '+str(Y)+', '+str(X+400)+', '+str(Y+50)+', 1')
-    tsclibrary.sendcommandW('BOX '+str(X)+', '+str(Y+50)+', '+str(X+400)+', '+str(Y+110)+', 1')
-    tsclibrary.sendcommandW('BOX '+str(X)+', '+str(Y+110)+', '+str(X+400)+', '+str(Y+150)+', 1')
-    tsclibrary.sendcommandW('BOX '+str(X)+', '+str(Y+150)+', '+str(X+400)+', '+str(Y+160+25*length)+', 1')
+    # tsclibrary.sendcommandW('TEXT '+str(X+80)+','+str(Y+20)+',"chinese",0,1,1,"Nutrition Facts"')
+    # tsclibrary.sendcommandW('BOX '+str(X)+', '+str(Y)+', '+str(X+400)+', '+str(Y+50)+', 1')
+    # tsclibrary.sendcommandW('BOX '+str(X)+', '+str(Y+50)+', '+str(X+400)+', '+str(Y+110)+', 1')
+    # tsclibrary.sendcommandW('BOX '+str(X)+', '+str(Y+110)+', '+str(X+400)+', '+str(Y+150)+', 1')
+    # tsclibrary.sendcommandW('BOX '+str(X)+', '+str(Y+150)+', '+str(X+400)+', '+str(Y+160+25*length)+', 1')
 
     # serving size
-    tsclibrary.sendcommandW('TEXT '+str(X+10)+', '+str(Y+60)+',"chinese", 0, 1, 1, "Each contains '
-                            +str(weight)+' grams"')
+    # tsclibrary.sendcommandW('TEXT '+str(X+10)+', '+str(Y+60)+',"chinese", 0, 1, 1, "Each contains '+str(weight)+' grams"')
     
-    tsclibrary.sendcommandW('TEXT '+str(X+10)+', '+str(Y+85)+',"chinese", 0, 1, 1, "This contains '
-                            +str(servings)+' package"')
+    # tsclibrary.sendcommandW('TEXT '+str(X+10)+', '+str(Y+85)+',"chinese", 0, 1, 1, "This contains '+str(servings)+' package"')
 
-    tsclibrary.sendcommandW('TEXT '+str(X+200)+', '+str(Y+120)+',"chinese", 0, 1, 1, "1 pack"')
-    tsclibrary.sendcommandW('TEXT '+str(X+300)+', '+str(Y+120)+',"chinese", 0, 1, 1, "100 g"')
+    # tsclibrary.sendcommandW('TEXT '+str(X+200)+', '+str(Y+120)+',"chinese", 0, 1, 1, "1 pack"')
+    # tsclibrary.sendcommandW('TEXT '+str(X+300)+', '+str(Y+120)+',"chinese", 0, 1, 1, "100 g"')
 
     with open("./printLabel/commandTxt/"+str(paperName)+".json","r") as jsonFile:
             labelMessage = json.load(jsonFile)
     # print('optionList :',optionList)
     # print('option :',option)
 
-    for l in range(0,len(option)):
-        if optionList[l] == 'heat':
-            tsclibrary.sendcommandW('TEXT '+str(X+10)+', '+str(Y+160+25*l)+',"chinese", 0, 1, 1, "'+optionList[l]+'"')
-            tsclibrary.sendcommandW('TEXT '+str(X+200)+', '+str(Y+160+25*l)+',"chinese", 0, 1, 1, "'+option[l]+'k"')
-            tsclibrary.sendcommandW('TEXT '+str(X+300)+', '+str(Y+160+25*l)+',"chinese", 0, 1, 1, "'+str(int(float(option[l])/weight*100))+'k"')
-        elif optionList[l] == 'saturated'or optionList[l] == 'trans' or optionList[l] == 'sugar':
-            tsclibrary.sendcommandW('TEXT '+str(X+15)+', '+str(Y+160+25*l)+',"chinese", 0, 1, 1, "'+optionList[l]+'"')
-            tsclibrary.sendcommandW('TEXT '+str(X+200)+', '+str(Y+160+25*l)+',"chinese", 0, 1, 1, "'+option[l]+'g"')
-            tsclibrary.sendcommandW('TEXT '+str(X+300)+', '+str(Y+160+25*l)+',"chinese", 0, 1, 1, "'+str(int(float(option[l])/weight*100))+'g"')
-        elif optionList[l] == 'sodium':
-            tsclibrary.sendcommandW('TEXT '+str(X+10)+', '+str(Y+160+25*l)+',"chinese", 0, 1, 1, "'+optionList[l]+'"')
-            tsclibrary.sendcommandW('TEXT '+str(X+200)+', '+str(Y+160+25*l)+',"chinese", 0, 1, 1, "'+option[l]+'mg"')
-            tsclibrary.sendcommandW('TEXT '+str(X+300)+', '+str(Y+160+25*l)+',"chinese", 0, 1, 1, "'+str(int(float(option[l])/weight*100))+'mg"')
-        else :
-            tsclibrary.sendcommandW('TEXT '+str(X+10)+', '+str(Y+160+25*l)+',"chinese", 0, 1, 1, "'+optionList[l]+'"')
-            tsclibrary.sendcommandW('TEXT '+str(X+200)+', '+str(Y+160+25*l)+',"chinese", 0, 1, 1, "'+option[l]+'g"')
-            tsclibrary.sendcommandW('TEXT '+str(X+300)+', '+str(Y+160+25*l)+',"chinese", 0, 1, 1, "'+str(int(float(option[l])/weight*100))+'g"')
+    # for l in range(0,len(option)):
+        # if optionList[l] == 'heat':
+            # tsclibrary.sendcommandW('TEXT '+str(X+10)+', '+str(Y+160+25*l)+',"chinese", 0, 1, 1, "'+optionList[l]+'"')
+            # tsclibrary.sendcommandW('TEXT '+str(X+200)+', '+str(Y+160+25*l)+',"chinese", 0, 1, 1, "'+option[l]+'k"')
+            # tsclibrary.sendcommandW('TEXT '+str(X+300)+', '+str(Y+160+25*l)+',"chinese", 0, 1, 1, "'+str(int(float(option[l])/weight*100))+'k"')
+        # elif optionList[l] == 'saturated'or optionList[l] == 'trans' or optionList[l] == 'sugar':
+            # tsclibrary.sendcommandW('TEXT '+str(X+15)+', '+str(Y+160+25*l)+',"chinese", 0, 1, 1, "'+optionList[l]+'"')
+            # tsclibrary.sendcommandW('TEXT '+str(X+200)+', '+str(Y+160+25*l)+',"chinese", 0, 1, 1, "'+option[l]+'g"')
+            # tsclibrary.sendcommandW('TEXT '+str(X+300)+', '+str(Y+160+25*l)+',"chinese", 0, 1, 1, "'+str(int(float(option[l])/weight*100))+'g"')
+        # elif optionList[l] == 'sodium':
+            # tsclibrary.sendcommandW('TEXT '+str(X+10)+', '+str(Y+160+25*l)+',"chinese", 0, 1, 1, "'+optionList[l]+'"')
+            # tsclibrary.sendcommandW('TEXT '+str(X+200)+', '+str(Y+160+25*l)+',"chinese", 0, 1, 1, "'+option[l]+'mg"')
+            # tsclibrary.sendcommandW('TEXT '+str(X+300)+', '+str(Y+160+25*l)+',"chinese", 0, 1, 1, "'+str(int(float(option[l])/weight*100))+'mg"')
+        # else :
+            # tsclibrary.sendcommandW('TEXT '+str(X+10)+', '+str(Y+160+25*l)+',"chinese", 0, 1, 1, "'+optionList[l]+'"')
+            # tsclibrary.sendcommandW('TEXT '+str(X+200)+', '+str(Y+160+25*l)+',"chinese", 0, 1, 1, "'+option[l]+'g"')
+            # tsclibrary.sendcommandW('TEXT '+str(X+300)+', '+str(Y+160+25*l)+',"chinese", 0, 1, 1, "'+str(int(float(option[l])/weight*100))+'g"')
 
     # 讀取已建立的內容
     with open("./printLabel/commandTxt/"+str(paperName)+".json","r",encoding='utf-8') as jsonFile:
@@ -184,8 +182,8 @@ def qrCode(request):
     paperSize = "紙張大小: "+str(paperWidth)+"mm * "+str(paperHeight)+"mm"
     density = "濃度: "+str(density)
 
-    tsclibrary.sendcommandW('QRCODE '+str(X)+','+str(Y)+','+ECC+','+str(width)+',A,'+str(rotation)+',M2,S7,"'
-                            +content+'"')
+    # tsclibrary.sendcommandW('QRCODE '+str(X)+','+str(Y)+','+ECC+','+str(width)+',A,'+str(rotation)+',M2,S7,"'
+                            # +content+'"')
     
     # 把標籤名稱跟累型合在一起
     createdList = dict(zip(createdList,typeList))
@@ -200,7 +198,7 @@ def text(request):
     size = request.POST.get('textSize')
     content = request.POST.get('textContent')
 
-    tsclibrary.sendcommandW('TEXT '+str(X)+', '+str(Y)+',"'+str(size)+'", 0, 1, 1, "'+content+'"')
+    # tsclibrary.sendcommandW('TEXT '+str(X)+', '+str(Y)+',"'+str(size)+'", 0, 1, 1, "'+content+'"')
 
     # 儲存已建立的內容
     with open("./printLabel/commandTxt/"+str(paperName)+".json","r") as jsonFile:
@@ -240,7 +238,7 @@ def text(request):
 
 def printLabel(request):
     copy = request.POST.get('copy')
-    tsclibrary.printlabelW("1",str(copy))
+    # tsclibrary.printlabelW("1",str(copy))
     return render(request,'finishPrint.html')
 
 def index(request):
@@ -258,7 +256,7 @@ def printSettings(request):
 def restart(request):
     # restart printer
     # tsclibrary.sendcommandW(chr(27) + '!R')
-    tsclibrary.closeport()
+    # tsclibrary.closeport()
     return render(request,'index.html')
 
 def nutritionOption(request):
