@@ -19,7 +19,7 @@ def setup(request):
     # Declare tsclibrary as global variable
     global tsclibrary 
 
-    tsclibrary = ctypes.CDLL("/printLabel/TSCLIB.dll")
+    tsclibrary = ctypes.CDLL("./app/printLabel/TSCLIB.dll")
     # Connect to printer and .dll
     # try:
     #     currentPath = os.getcwd()
