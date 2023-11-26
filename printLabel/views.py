@@ -22,8 +22,7 @@ def setup(request):
     # Connect to printer and .dll
     try:
         currentPath = os.getcwd()
-        print("osListdir : ",os.listdir(currentPath),type(os.listdir(currentPath)))
-        tsclibrary = ctypes.WinDLL("./printLabel/TSCLIB.dll")
+        tsclibrary = ctypes.WinDLL("/app/printLabel/TSCLIB.dll")
         # tsclibrary = ctypes.WinDLL("./printLabel/tsclibnet.dll")
         tsclibrary.openportW("USB")
         
