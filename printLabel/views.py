@@ -23,7 +23,7 @@ def setup(request):
     try:
         currentPath = os.getcwd()
         print("currentPath : ",currentPath+"/printLabel")
-        tsclibrary = ctypes.WinDLL(".\printLabel\TSCLIB.dll")
+        tsclibrary = ctypes.WinDLL("/printLabel/TSCLIB.dll")
         # tsclibrary = ctypes.WinDLL("./printLabel/tsclibnet.dll")
         tsclibrary.openportW("USB")
         
