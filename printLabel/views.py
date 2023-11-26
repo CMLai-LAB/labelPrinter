@@ -31,7 +31,7 @@ def setup(request):
         currentPath = os.getcwd()
         print("currentPath : ",currentPath)
         print("open port fail")
-        return render(request,'index.html',{"warning":"沒有連接標籤機'\n'%s"%currentPath+os.listdir(currentPath)})
+        return render(request,'index.html',{"warning":"沒有連接標籤機'\n'%s"%currentPath,"dir":os.listdir(currentPath)})
 
     # Setup printer
     tsclibrary.sendcommandW("DENSITY "+str(density))
