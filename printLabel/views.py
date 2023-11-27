@@ -194,8 +194,7 @@ def text(request):
     content = request.POST.get('textContent')
 
     tsclibrary.sendcommandW('TEXT '+str(X)+', '+str(Y)+',"'+str(size)+'", 0, 1, 1, "'+content+'"')
-    tsclibrary.sendcommandW('TEXT '+str(X+100)+', '+str(Y+100)+',"TST24.BF2", 0, 1, 1, "拜託印出來"')
-    print('TEXT '+str(X+100)+', '+str(Y+100)+',"TST24.BF2", 0, 1, 1, "拜託印出來"')
+    tsclibrary.printerfontW('"'+str(X)+'"', '"'+str(Y+120)+'"', "TST24.BF2","0", "1", "1", "新北市")
     # 儲存已建立的內容
     with open("./printLabel/commandTxt/"+str(paperName)+".json","r") as jsonFile:
         labelMessage = json.load(jsonFile)
