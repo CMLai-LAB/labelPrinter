@@ -39,16 +39,17 @@
         <br>
         {% for item, type in createdList.items %}
             {{item}} ({{type}})
+
             <!-- 刪除按鈕 -->
-            
             <form style="position: relative; left: 150px;" action="/deleteItem/" method="post">
                 {% csrf_token %}
                 <button name="deleteItemButton" value={{item}} onclick="confirmDelete(event)">刪除</button><br><br>
             </form>
+            
             <!-- 編輯按鈕 -->
-            <form style="position: relative; top: 0; left: 100px;" action="/edit/" method="post">
+            <form style="position: relative; top: 0; left: 100px;" action="/detail/" method="post">
                 {% csrf_token %} 
-                <button name="editButton" value={{item}} onclick="confirmEdit(event)">編輯</button><br><br>
+                <button name="editButton" value={{item}} onclick="confirmEdit(event)">查看資訊</button><br><br>
             </form>
           
         {% endfor %}

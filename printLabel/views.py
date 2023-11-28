@@ -240,7 +240,7 @@ def index(request):
     return render(request,'index.html')
 
 def textSettings(request):
-    return render(request,'textSettings.html')
+    return render(request,'textSettings.html',{"X":"X","Y":"Y"})
 
 def qrSettings(request):
     return render(request,'qrSettings.html')
@@ -348,13 +348,27 @@ def deleteItem(request):
     return render(request,'label.html',{"paperName":paperName,"paperSize":paperSize,"density":density,
                                         "createdList":createdList,"positionDict":positionDict})
 
-def edit(request):
+def detail(request):
     itemName = request.POST.get('editButton')
+
     with open("./printLabel/commandTxt/"+str(paperName)+".json","r",encoding='utf-8') as jsonFile:
         labelMessage = json.load(jsonFile)
     itemType = labelMessage["%s"%paperName]["%s"%itemName]["type"]
     if itemType == "文字":
-        return render(request,'textSettings.html',{"itemName":itemName})
+        size = labelMessage["%s"%paperName]["%s"%itemName]["size"]
+        content = labelMessage["%s"%paperName]["%s"%itemName]["content"]
+        X = labelMessage["%s"%paperName]["%s"%itemName]["X"] //8
+        Y = labelMessage["%s"%paperName]["%s"%itemName]["Y"] //8
+
+        """Delete item first"""
+        with open("./printLabel/commandTxt/"+str(paperName)+".json","r",encoding='utf-8') as jsonFile:
+            labelMessage = json.load(jsonFile)
+        del labelMessage["%s"%paperName]["%s"%itemName]
+
+        with open("./printLabel/commandTxt/"+str(paperName)+".json","w",encoding='utf-8') as jsonFile:
+            json.dump(labelMessage,jsonFile)
+        """"""
+        return render(request,'textDetail.html',{"itemName":itemName,"size":size,"content":content,"X":X,"Y":Y})
     elif itemType == "QRcode":
         return render(request,'qrSettings.html',{"itemName":itemName})
     elif itemType == "營養標籤":
