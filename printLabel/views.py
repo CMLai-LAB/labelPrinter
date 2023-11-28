@@ -314,4 +314,48 @@ def deleteItem(request):
     with open("./printLabel/commandTxt/"+str(paperName)+".json","r",encoding='utf-8') as jsonFile:
         labelMessage = json.load(jsonFile)
     itemName = request.POST.get('deleteItemButton')
-    return HttpResponse(itemName)
+    
+    del labelMessage["%s"%paperName]["%s"%itemName]
+
+    with open("./printLabel/commandTxt/"+str(paperName)+".json","w",encoding='utf-8') as jsonFile:
+        json.dump(labelMessage,jsonFile)
+    # 讀取已建立的內容
+    with open("./printLabel/commandTxt/"+str(paperName)+".json","r",encoding='utf-8') as jsonFile:
+        labelMessage = json.load(jsonFile)
+
+    # 標籤名稱
+    created = labelMessage['%s'%paperName].keys()
+    createdList = list(created)
+    createdList = createdList[3:]
+
+    # 標籤類型
+    typeList = []
+    for i in range(0,len(createdList)):
+        types = labelMessage['%s'%paperName]['%s'%createdList[i]]['type']
+        typeList.append(types)
+
+    # 重新顯示紙張資訊到 label.html
+    paperWidth = labelMessage['%s'%paperName]['paperWidth']
+    paperHeight = labelMessage['%s'%paperName]['paperHeight']
+    density = labelMessage['%s'%paperName]['density']
+
+    paperSize = "紙張大小: "+str(paperWidth)+"mm * "+str(paperHeight)+"mm"
+    density = "濃度: "+str(density)
+
+    # 把標籤名稱跟累型合在一起
+    createdList = dict(zip(createdList,typeList))
+
+    return render(request,'label.html',{"paperName":paperName,"paperSize":paperSize,"density":density,
+                                        "createdList":createdList,"positionDict":positionDict})
+
+def edit(request):
+    itemName = request.POST.get('editButton')
+    with open("./printLabel/commandTxt/"+str(paperName)+".json","r",encoding='utf-8') as jsonFile:
+        labelMessage = json.load(jsonFile)
+    itemType = labelMessage["%s"%paperName]["%s"%itemName]["type"]
+    if itemType == "文字":
+        return render(request,'textSettings.html',{"itemName":itemName})
+    elif itemType == "QRcode":
+        return render(request,'qrSettings.html',{"itemName":itemName})
+    elif itemType == "營養標籤":
+        return render(request,'nutritionFacts.html',{"itemName":itemName})
