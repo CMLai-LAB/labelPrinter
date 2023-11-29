@@ -54,12 +54,23 @@ def nutritionFacts(request):
     X = int(request.POST.get('nutritionX')) *8
     Y = int(request.POST.get('nutritionY')) *8
     option = request.POST.getlist('options')
-    
-    optionList = request.POST.get('optionList')
-    optionList = list(eval(optionList).keys())
     weight = int(request.POST.get('weight'))
     servings = request.POST.get('servings')
+    optionList = request.POST.get('optionList')
+    optionList = list(eval(optionList).keys())
 
+    ### translate option to english ###
+    with open("./printLabel/translate.json","r",encoding='utf-8') as jsonFile:
+        labelMessage = json.load(jsonFile)
+    english = list(labelMessage.keys())
+    chinese = list(labelMessage.values())
+
+    for i in range(0,len(option)):
+        for j in range(0,len(english)):
+            if optionList[i] == chinese[j]:
+                optionList[i] = english[j]
+    print(optionList)
+    ############################
     with open("./printLabel/commandTxt/"+str(paperName)+".json","r") as jsonFile:
             labelMessage = json.load(jsonFile)
 
@@ -369,7 +380,52 @@ def detail(request):
             json.dump(labelMessage,jsonFile)
         """"""
         return render(request,'textDetail.html',{"itemName":itemName,"size":size,"content":content,"X":X,"Y":Y})
+    
     elif itemType == "QRcode":
-        return render(request,'qrSettings.html',{"itemName":itemName})
+        X = labelMessage["%s"%paperName]["%s"%itemName]["X"] //8
+        Y = labelMessage["%s"%paperName]["%s"%itemName]["Y"] //8
+        content = labelMessage["%s"%paperName]["%s"%itemName]["content"]
+        ECC = labelMessage["%s"%paperName]["%s"%itemName]["ECC"]
+        width = labelMessage["%s"%paperName]["%s"%itemName]["width"]
+        rotation = labelMessage["%s"%paperName]["%s"%itemName]["rotation"]
+
+        """Delete item first"""
+        with open("./printLabel/commandTxt/"+str(paperName)+".json","r",encoding='utf-8') as jsonFile:
+            labelMessage = json.load(jsonFile)
+        del labelMessage["%s"%paperName]["%s"%itemName]
+
+        with open("./printLabel/commandTxt/"+str(paperName)+".json","w",encoding='utf-8') as jsonFile:
+            json.dump(labelMessage,jsonFile)
+        """"""
+        return render(request,'qrDetail.html',{"itemName":itemName,"content":content,"X":X,"Y":Y,"ECC":ECC,"width":width,"rotation":rotation})
+    
     elif itemType == "營養標籤":
-        return render(request,'nutritionFacts.html',{"itemName":itemName})
+        option = list(labelMessage["%s"%paperName]["%s"%itemName].keys())[5:]
+        optionValue = list(labelMessage["%s"%paperName]["%s"%itemName].values())[5:]
+        X = labelMessage["%s"%paperName]["%s"%itemName]["X"] //8
+        Y = labelMessage["%s"%paperName]["%s"%itemName]["Y"] //8
+        weight = labelMessage["%s"%paperName]["%s"%itemName]["weight"]
+        servings = labelMessage["%s"%paperName]["%s"%itemName]["servings"]
+
+        # translate option to chinese
+        with open("./printLabel/translate.json","r",encoding='utf-8') as jsonFile:
+            labelMessage = json.load(jsonFile)
+        english = list(labelMessage.keys())
+        chinese = list(labelMessage.values())
+
+        for i in range(0,len(option)):
+            for j in range(0,len(english)):
+                if option[i] == english[j]:
+                    option[i] = chinese[j]
+        option = dict(zip(option,optionValue))
+        
+
+        """Delete item first"""
+        with open("./printLabel/commandTxt/"+str(paperName)+".json","r",encoding='utf-8') as jsonFile:
+            labelMessage = json.load(jsonFile)
+        del labelMessage["%s"%paperName]["%s"%itemName]
+
+        with open("./printLabel/commandTxt/"+str(paperName)+".json","w",encoding='utf-8') as jsonFile:
+            json.dump(labelMessage,jsonFile)
+        """"""
+        return render(request,'nutritionDetail.html',{"itemName":itemName,"option":option,"X":X,"Y":Y,"weight":weight,"servings":servings})
