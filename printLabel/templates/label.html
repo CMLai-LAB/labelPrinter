@@ -35,15 +35,36 @@
     </h3>  
     <h2>已建立 : </h2>
 
-    <div style="position:absolute; left:30px; top:430px;">
-        <br>
-        {% for item, type in createdList.items %}
-            {{item}} ({{type}}) <br><br>
-        {% endfor %}
-    </div>
+    {% for item, type in createdList.items %}
+        {{item}} ({{type}})
+        <!-- 刪除按鈕 -->
+        <form style="display: inline-block;" action="/deleteItem/" method="post">
+            {% csrf_token %}
+            <button name="deleteItemButton" value={{item}} onclick="confirmDelete(event)">刪除</button><br>
+        </form>
+        &nbsp;
+        <!-- 編輯按鈕 -->
+        <form style="display: inline-block;" action="/detail/" method="post">
+            {% csrf_token %} 
+            <button name="editButton" value={{item}} onclick="confirmEdit(event)">查看資訊</button><br>
+        </form>
+        <br><br>
+    {% endfor %}
    
     <canvas id="myCanvas" width="410" height="320" style="border:1px solid #000000; position:absolute; right:200px; top: 100px;"></canvas>
     <script>
+        function confirmEit(e){
+            if (!confirm("確定要編輯嗎?")){
+                e.preventDefault();
+            }
+        }
+        function confirmDelete(e){
+            if (!confirm("確定要刪除嗎?")){
+                e.preventDefault();
+            }else{
+                alert("刪除成功");
+            }
+        }
         var canvas = document.getElementById("myCanvas");
         var ctx = canvas.getContext("2d");
         $.ajax({
@@ -78,9 +99,8 @@
                         var weight = response[k]["weight"].toString();
                         var servings = response[k]["servings"].toString();
                         var length = Object.keys(response[k]).length - 5;
-                        var width = Object.keys(response[k]).length
                         // 最大方形
-                        ctx.rect(x,y,200,70+length*17);
+                        ctx.rect(x,y,200,80+length*16);
                         ctx.stroke();
                         // 最大方形內第一條線
                         ctx.moveTo(x,y+25);
@@ -96,13 +116,13 @@
                         ctx.stroke();
                         // Nutritions Facts
                         ctx.font = "11px Arial";
-                        ctx.fillText("Nutrition Facts",x+35,y+20);
+                        ctx.fillText("營養標示",x+75,y+18);
                         //  Servings Per Container
                         ctx.font = "11px Arial";
                         ctx.fillText('每一份量'+weight+'公克',x+5,y+40);
                         // servings size
                         ctx.font = "11px Arial";
-                        ctx.fillText('本包裝含 '+servings+'package',x+5,y+55);
+                        ctx.fillText('本包裝含 '+servings+'份',x+5,y+55);
                         // 1 pack
                         ctx.font = "11px Arial";
                         ctx.fillText("每份",x+100,y+75);
@@ -110,17 +130,18 @@
                         ctx.font = "11px Arial";
                         ctx.fillText("每100公克",x+145,y+75);
                         // 營養標籤內容
+                        var count = 1;
                         for (m in response[k]){
                             if (m != "type" && m != "X" && m != "Y" && m != "weight" && m != "servings"){
                                 console.log(response[k][m]);
                                 if (m == "heat"){
-                                    ctx.fillText(response[k][m]+"大卡",x+95,(y+50+length*17)-(width-1)*13.5);
-                                    ctx.fillText(parseInt(response[k][m]/Number(weight)*100).toString()+"大卡",x+150,(y+50+length*17)-(width-1)*13.5);
+                                    ctx.fillText(response[k][m]+"大卡",x+95,y+3+count*15);
+                                    ctx.fillText(parseInt(response[k][m]/Number(weight)*100).toString()+"大卡",x+150,y+3+count*15);
                                     m = "熱量";
-                                    ctx.fillText(m,x+5,(y+50+length*17)-(width-1)*13.5);
+                                    ctx.fillText(m,x+3,y+3+count*15);
                                 }else if(m == "saturated" | m =="trans" | m == "sugar"){
-                                    ctx.fillText(response[k][m]+"公克",x+95,(y+50+length*17)-(width-1)*13.5);
-                                    ctx.fillText(parseInt(response[k][m]/Number(weight)*100).toString()+"公克",x+150,(y+50+length*17)-(width-1)*13.5);
+                                    ctx.fillText(response[k][m]+"公克",x+95,y+3+count*15);
+                                    ctx.fillText(parseInt(response[k][m]/Number(weight)*100).toString()+"公克",x+150,y+3+count*15);
                                     if (m == "saturated"){
                                         m = "飽和脂肪";
                                     }else if (m == "trans"){
@@ -128,17 +149,17 @@
                                     }else{
                                         m = "糖";
                                     }
-                                    ctx.fillText(m,x+15,(y+50+length*17)-(width-1)*13.5);
+                                    ctx.fillText(m,x+15,y+3+count*15);
                                     
                                 }else if(m == "sodium"){
-                                    ctx.fillText(response[k][m]+"毫克",x+95,(y+50+length*17)-(width-1)*13.5);
-                                    ctx.fillText(parseInt(response[k][m]/Number(weight)*100).toString()+"毫克",x+150,(y+50+length*17)-(width-1)*13.5);
+                                    ctx.fillText(response[k][m]+"毫克",x+95,y+5+count*15);
+                                    ctx.fillText(parseInt(response[k][m]/Number(weight)*100).toString()+"毫克",x+150,y+3+count*15);
                                     m = "鈉";
-                                    ctx.fillText(m,x+5,(y+50+length*17)-(width-1)*13.5);
+                                    ctx.fillText(m,x+3,y+3+count*15);
 
                                 }else{
-                                    ctx.fillText(response[k][m]+"公克",x+95,(y+50+length*17)-(width-1)*13.5);
-                                    ctx.fillText(parseInt(response[k][m]/Number(weight)*100).toString()+"公克",x+150,(y+50+length*17)-(width-1)*13.5);
+                                    ctx.fillText(response[k][m]+"公克",x+95,y+3+count*15);
+                                    ctx.fillText(parseInt(response[k][m]/Number(weight)*100).toString()+"公克",x+150,y+3+count*15);
                                     if (m == "portain"){
                                         m = "蛋白質";
                                     }else if (m == "fat"){
@@ -163,11 +184,11 @@
                                         m = "鐵";
                                     }
                                     
-                                    ctx.fillText(m,x+5,(y+50+length*17)-(width-1)*13.5);
+                                    ctx.fillText(m,x+3,y+3+count*15);
                                 }
                                 
                             }
-                            width -= 1;
+                            count += 1;
                         }
                     }
                 }    

@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>編輯文字內容</title>
+</head>
+<body>
+    <h1>文字信息</h1>
+    <form action="/text/" method="post">
+        {% csrf_token %}
+        <h3>文字名稱&#12288;<input type="text" name="textName" placeholder="{{itemName}}" value="{{itemName}}"><h3>
+        <h3 style="display: inline-block;">X 座標&#12288;<input type="text" name="textX" placeholder="{{X}}" value="{{X}}"></h3> <p style="display: inline-block;">mm<p>
+        <h3 style="display: inline-block;">Y 座標&#12288;<input type="text" name="textY" placeholder="{{Y}}" value="{{Y}}"></h3> <p style="display: inline-block;">mm<p>
+        <h3>文字內容&#12288;<input type="text" placeholder="{{content}}" name="textContent" value="{{content}}"><h3>
+        <h3>文體大小&#12288;<input type="text" placeholder="{{size}}" name="textSize" value="{{size}}"><h3>
+        <button type="submit">完成</button>
+    </form>
+</body>
+</html>

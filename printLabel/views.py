@@ -5,7 +5,6 @@ from django.http import JsonResponse
 from django.shortcuts import render, HttpResponse
 import ctypes
 import json
-import os
 
 # Create your views here.
 
@@ -19,22 +18,16 @@ def setup(request):
     # Declare tsclibrary as global variable
     # global tsclibrary 
 
-    # tsclibrary = ctypes.CDLL("./printLabel/TSCLIB.dll")
-    # Connect to printer and .dll
+    # # Connect to printer and .dll
     # try:
-    #     currentPath = os.getcwd()
-        # tsclibrary = ctypes.WinDLL("/printLabel/TSCLIB.dll")
-        # tsclibrary = ctypes.CDLL("/printLabel/TSCLIB.dll")
-        # tsclibrary = ctypes.WinDLL("./printLabel/tsclibnet.dll")
-        # tsclibrary.openportW("USB")
-        
+    #     tsclibrary = ctypes.WinDLL("./printLabel/TSCLIB.dll")
+    #     # tsclibrary = ctypes.WinDLL("./printLabel/tsclibnet.dll")
+    #     tsclibrary.openportW("USB")
     # except:
-    #     currentPath = os.getcwd()
-        
     #     print("open port fail")
-    #     return render(request,'index.html',{"warning":"沒有連接標籤機 "+currentPath,"dir":os.listdir(currentPath+"/printLabel")})
+    #     return render(request,'index.html',{"warning":"沒有連接標籤機"})
 
-    # Setup printer
+    # # Setup printer
     # tsclibrary.sendcommandW("DENSITY "+str(density))
     # tsclibrary.sendcommandW("SIZE " + str(paperWidth) +" mm, " + str(paperHeight) +" mm")
     # tsclibrary.clearbuffer()
@@ -58,15 +51,25 @@ def setup(request):
 
 def nutritionFacts(request):
     nutritionName = request.POST.get('nutritionName')
-    X = int(request.POST.get('nutritionX')) *8
-    Y = int(request.POST.get('nutritionY')) *8
+    X = float(request.POST.get('nutritionX')) *8
+    Y = float(request.POST.get('nutritionY')) *8
     option = request.POST.getlist('options')
-    
-    optionList = request.POST.get('optionList')
-    optionList = list(eval(optionList).keys())
     weight = int(request.POST.get('weight'))
     servings = request.POST.get('servings')
+    optionList = request.POST.get('optionList')
+    optionList = list(eval(optionList).keys())
 
+    ### translate option to english ###
+    with open("./printLabel/translate.json","r",encoding='utf-8') as jsonFile:
+        labelMessage = json.load(jsonFile)
+    english = list(labelMessage.keys())
+    chinese = list(labelMessage.values())
+
+    for i in range(0,len(option)):
+        for j in range(0,len(english)):
+            if optionList[i] == chinese[j]:
+                optionList[i] = english[j]
+    ############################
     with open("./printLabel/commandTxt/"+str(paperName)+".json","r") as jsonFile:
             labelMessage = json.load(jsonFile)
 
@@ -90,10 +93,12 @@ def nutritionFacts(request):
     # tsclibrary.sendcommandW('BOX '+str(X)+', '+str(Y+110)+', '+str(X+400)+', '+str(Y+150)+', 1')
     # tsclibrary.sendcommandW('BOX '+str(X)+', '+str(Y+150)+', '+str(X+400)+', '+str(Y+160+25*length)+', 1')
 
-    # serving size
-    # tsclibrary.sendcommandW('TEXT '+str(X+10)+', '+str(Y+60)+',"chinese", 0, 1, 1, "Each contains '+str(weight)+' grams"')
+    # # serving size
+    # tsclibrary.sendcommandW('TEXT '+str(X+10)+', '+str(Y+60)+',"chinese", 0, 1, 1, "Each contains '
+    #                         +str(weight)+' grams"')
     
-    # tsclibrary.sendcommandW('TEXT '+str(X+10)+', '+str(Y+85)+',"chinese", 0, 1, 1, "This contains '+str(servings)+' package"')
+    # tsclibrary.sendcommandW('TEXT '+str(X+10)+', '+str(Y+85)+',"chinese", 0, 1, 1, "This contains '
+    #                         +str(servings)+' package"')
 
     # tsclibrary.sendcommandW('TEXT '+str(X+200)+', '+str(Y+120)+',"chinese", 0, 1, 1, "1 pack"')
     # tsclibrary.sendcommandW('TEXT '+str(X+300)+', '+str(Y+120)+',"chinese", 0, 1, 1, "100 g"')
@@ -104,22 +109,22 @@ def nutritionFacts(request):
     # print('option :',option)
 
     # for l in range(0,len(option)):
-        # if optionList[l] == 'heat':
-            # tsclibrary.sendcommandW('TEXT '+str(X+10)+', '+str(Y+160+25*l)+',"chinese", 0, 1, 1, "'+optionList[l]+'"')
-            # tsclibrary.sendcommandW('TEXT '+str(X+200)+', '+str(Y+160+25*l)+',"chinese", 0, 1, 1, "'+option[l]+'k"')
-            # tsclibrary.sendcommandW('TEXT '+str(X+300)+', '+str(Y+160+25*l)+',"chinese", 0, 1, 1, "'+str(int(float(option[l])/weight*100))+'k"')
-        # elif optionList[l] == 'saturated'or optionList[l] == 'trans' or optionList[l] == 'sugar':
-            # tsclibrary.sendcommandW('TEXT '+str(X+15)+', '+str(Y+160+25*l)+',"chinese", 0, 1, 1, "'+optionList[l]+'"')
-            # tsclibrary.sendcommandW('TEXT '+str(X+200)+', '+str(Y+160+25*l)+',"chinese", 0, 1, 1, "'+option[l]+'g"')
-            # tsclibrary.sendcommandW('TEXT '+str(X+300)+', '+str(Y+160+25*l)+',"chinese", 0, 1, 1, "'+str(int(float(option[l])/weight*100))+'g"')
-        # elif optionList[l] == 'sodium':
-            # tsclibrary.sendcommandW('TEXT '+str(X+10)+', '+str(Y+160+25*l)+',"chinese", 0, 1, 1, "'+optionList[l]+'"')
-            # tsclibrary.sendcommandW('TEXT '+str(X+200)+', '+str(Y+160+25*l)+',"chinese", 0, 1, 1, "'+option[l]+'mg"')
-            # tsclibrary.sendcommandW('TEXT '+str(X+300)+', '+str(Y+160+25*l)+',"chinese", 0, 1, 1, "'+str(int(float(option[l])/weight*100))+'mg"')
-        # else :
-            # tsclibrary.sendcommandW('TEXT '+str(X+10)+', '+str(Y+160+25*l)+',"chinese", 0, 1, 1, "'+optionList[l]+'"')
-            # tsclibrary.sendcommandW('TEXT '+str(X+200)+', '+str(Y+160+25*l)+',"chinese", 0, 1, 1, "'+option[l]+'g"')
-            # tsclibrary.sendcommandW('TEXT '+str(X+300)+', '+str(Y+160+25*l)+',"chinese", 0, 1, 1, "'+str(int(float(option[l])/weight*100))+'g"')
+    #     if optionList[l] == 'heat':
+    #         tsclibrary.sendcommandW('TEXT '+str(X+10)+', '+str(Y+160+25*l)+',"chinese", 0, 1, 1, "'+optionList[l]+'"')
+    #         tsclibrary.sendcommandW('TEXT '+str(X+200)+', '+str(Y+160+25*l)+',"chinese", 0, 1, 1, "'+option[l]+'k"')
+    #         tsclibrary.sendcommandW('TEXT '+str(X+300)+', '+str(Y+160+25*l)+',"chinese", 0, 1, 1, "'+str(int(float(option[l])/weight*100))+'k"')
+    #     elif optionList[l] == 'saturated'or optionList[l] == 'trans' or optionList[l] == 'sugar':
+    #         tsclibrary.sendcommandW('TEXT '+str(X+15)+', '+str(Y+160+25*l)+',"chinese", 0, 1, 1, "'+optionList[l]+'"')
+    #         tsclibrary.sendcommandW('TEXT '+str(X+200)+', '+str(Y+160+25*l)+',"chinese", 0, 1, 1, "'+option[l]+'g"')
+    #         tsclibrary.sendcommandW('TEXT '+str(X+300)+', '+str(Y+160+25*l)+',"chinese", 0, 1, 1, "'+str(int(float(option[l])/weight*100))+'g"')
+    #     elif optionList[l] == 'sodium':
+    #         tsclibrary.sendcommandW('TEXT '+str(X+10)+', '+str(Y+160+25*l)+',"chinese", 0, 1, 1, "'+optionList[l]+'"')
+    #         tsclibrary.sendcommandW('TEXT '+str(X+200)+', '+str(Y+160+25*l)+',"chinese", 0, 1, 1, "'+option[l]+'mg"')
+    #         tsclibrary.sendcommandW('TEXT '+str(X+300)+', '+str(Y+160+25*l)+',"chinese", 0, 1, 1, "'+str(int(float(option[l])/weight*100))+'mg"')
+    #     else :
+    #         tsclibrary.sendcommandW('TEXT '+str(X+10)+', '+str(Y+160+25*l)+',"chinese", 0, 1, 1, "'+optionList[l]+'"')
+    #         tsclibrary.sendcommandW('TEXT '+str(X+200)+', '+str(Y+160+25*l)+',"chinese", 0, 1, 1, "'+option[l]+'g"')
+    #         tsclibrary.sendcommandW('TEXT '+str(X+300)+', '+str(Y+160+25*l)+',"chinese", 0, 1, 1, "'+str(int(float(option[l])/weight*100))+'g"')
 
     # 讀取已建立的內容
     with open("./printLabel/commandTxt/"+str(paperName)+".json","r",encoding='utf-8') as jsonFile:
@@ -199,7 +204,7 @@ def text(request):
     content = request.POST.get('textContent')
 
     # tsclibrary.sendcommandW('TEXT '+str(X)+', '+str(Y)+',"'+str(size)+'", 0, 1, 1, "'+content+'"')
-
+    # tsclibrary.printerfontW('"'+str(X)+'"', '"'+str(Y+120)+'"', "TST24.BF2","0", "1", "1", "新北市")
     # 儲存已建立的內容
     with open("./printLabel/commandTxt/"+str(paperName)+".json","r") as jsonFile:
         labelMessage = json.load(jsonFile)
@@ -245,7 +250,7 @@ def index(request):
     return render(request,'index.html')
 
 def textSettings(request):
-    return render(request,'textSettings.html')
+    return render(request,'textSettings.html',{"X":"X","Y":"Y"})
 
 def qrSettings(request):
     return render(request,'qrSettings.html')
@@ -304,6 +309,7 @@ def nutritionSettings(request):
 
 def drawOnHtml(request):
     if request.method == 'GET':
+        
         # 讀取已建立的內容
         with open("./printLabel/commandTxt/"+str(paperName)+".json","r",encoding='utf-8') as jsonFile:
             labelMessage = json.load(jsonFile)
@@ -313,3 +319,112 @@ def drawOnHtml(request):
     for i in range(0,len(created)):
         labelMessage.pop(created[i])
     return JsonResponse(labelMessage)
+
+def deleteItem(request):
+    with open("./printLabel/commandTxt/"+str(paperName)+".json","r",encoding='utf-8') as jsonFile:
+        labelMessage = json.load(jsonFile)
+    itemName = request.POST.get('deleteItemButton')
+    
+    del labelMessage["%s"%paperName]["%s"%itemName]
+
+    with open("./printLabel/commandTxt/"+str(paperName)+".json","w",encoding='utf-8') as jsonFile:
+        json.dump(labelMessage,jsonFile)
+    # 讀取已建立的內容
+    with open("./printLabel/commandTxt/"+str(paperName)+".json","r",encoding='utf-8') as jsonFile:
+        labelMessage = json.load(jsonFile)
+
+    # 標籤名稱
+    created = labelMessage['%s'%paperName].keys()
+    createdList = list(created)
+    createdList = createdList[3:]
+
+    # 標籤類型
+    typeList = []
+    for i in range(0,len(createdList)):
+        types = labelMessage['%s'%paperName]['%s'%createdList[i]]['type']
+        typeList.append(types)
+
+    # 重新顯示紙張資訊到 label.html
+    paperWidth = labelMessage['%s'%paperName]['paperWidth']
+    paperHeight = labelMessage['%s'%paperName]['paperHeight']
+    density = labelMessage['%s'%paperName]['density']
+
+    paperSize = "紙張大小: "+str(paperWidth)+"mm * "+str(paperHeight)+"mm"
+    density = "濃度: "+str(density)
+
+    # 把標籤名稱跟累型合在一起
+    createdList = dict(zip(createdList,typeList))
+
+    return render(request,'label.html',{"paperName":paperName,"paperSize":paperSize,"density":density,
+                                        "createdList":createdList,"positionDict":positionDict})
+
+def detail(request):
+    itemName = request.POST.get('editButton')
+
+    with open("./printLabel/commandTxt/"+str(paperName)+".json","r",encoding='utf-8') as jsonFile:
+        labelMessage = json.load(jsonFile)
+    itemType = labelMessage["%s"%paperName]["%s"%itemName]["type"]
+    if itemType == "文字":
+        size = labelMessage["%s"%paperName]["%s"%itemName]["size"]
+        content = labelMessage["%s"%paperName]["%s"%itemName]["content"]
+        X = labelMessage["%s"%paperName]["%s"%itemName]["X"] //8
+        Y = labelMessage["%s"%paperName]["%s"%itemName]["Y"] //8
+
+        """Delete item first"""
+        with open("./printLabel/commandTxt/"+str(paperName)+".json","r",encoding='utf-8') as jsonFile:
+            labelMessage = json.load(jsonFile)
+        del labelMessage["%s"%paperName]["%s"%itemName]
+
+        with open("./printLabel/commandTxt/"+str(paperName)+".json","w",encoding='utf-8') as jsonFile:
+            json.dump(labelMessage,jsonFile)
+        """"""
+        return render(request,'textDetail.html',{"itemName":itemName,"size":size,"content":content,"X":X,"Y":Y})
+    
+    elif itemType == "QRcode":
+        X = labelMessage["%s"%paperName]["%s"%itemName]["X"] //8
+        Y = labelMessage["%s"%paperName]["%s"%itemName]["Y"] //8
+        content = labelMessage["%s"%paperName]["%s"%itemName]["content"]
+        ECC = labelMessage["%s"%paperName]["%s"%itemName]["ECC"]
+        width = labelMessage["%s"%paperName]["%s"%itemName]["width"]
+        rotation = labelMessage["%s"%paperName]["%s"%itemName]["rotation"]
+
+        """Delete item first"""
+        with open("./printLabel/commandTxt/"+str(paperName)+".json","r",encoding='utf-8') as jsonFile:
+            labelMessage = json.load(jsonFile)
+        del labelMessage["%s"%paperName]["%s"%itemName]
+
+        with open("./printLabel/commandTxt/"+str(paperName)+".json","w",encoding='utf-8') as jsonFile:
+            json.dump(labelMessage,jsonFile)
+        """"""
+        return render(request,'qrDetail.html',{"itemName":itemName,"content":content,"X":X,"Y":Y,"ECC":ECC,"width":width,"rotation":rotation})
+    
+    elif itemType == "營養標籤":
+        option = list(labelMessage["%s"%paperName]["%s"%itemName].keys())[5:]
+        optionValue = list(labelMessage["%s"%paperName]["%s"%itemName].values())[5:]
+        X = labelMessage["%s"%paperName]["%s"%itemName]["X"] /8
+        Y = labelMessage["%s"%paperName]["%s"%itemName]["Y"] /8
+        weight = labelMessage["%s"%paperName]["%s"%itemName]["weight"]
+        servings = labelMessage["%s"%paperName]["%s"%itemName]["servings"]
+
+        # translate option to chinese
+        with open("./printLabel/translate.json","r",encoding='utf-8') as jsonFile:
+            labelMessage = json.load(jsonFile)
+        english = list(labelMessage.keys())
+        chinese = list(labelMessage.values())
+
+        for i in range(0,len(option)):
+            for j in range(0,len(english)):
+                if option[i] == english[j]:
+                    option[i] = chinese[j]
+        option = dict(zip(option,optionValue))
+        
+
+        """Delete item first"""
+        with open("./printLabel/commandTxt/"+str(paperName)+".json","r",encoding='utf-8') as jsonFile:
+            labelMessage = json.load(jsonFile)
+        del labelMessage["%s"%paperName]["%s"%itemName]
+
+        with open("./printLabel/commandTxt/"+str(paperName)+".json","w",encoding='utf-8') as jsonFile:
+            json.dump(labelMessage,jsonFile)
+        """"""
+        return render(request,'nutritionDetail.html',{"itemName":itemName,"option":option,"X":X,"Y":Y,"weight":weight,"servings":servings})

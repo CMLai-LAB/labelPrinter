@@ -16,5 +16,7 @@ urlpatterns = [
     path('nutritionOption/',views.nutritionOption,name='nutritionOption'),
     path('nutritionSettings/',views.nutritionSettings,name='nutritionSettings'),
     path('drawOnHtml/',views.drawOnHtml,name='drawOnHtml'),
+    path('deleteItem/',views.deleteItem,name='deleteItem'),
+    path('detail/',views.detail,name='detail'),
 
 ]

@@ -1,0 +1,18 @@
+{
+    "heat": "熱量",
+    "portain": "蛋白質",
+    "fat": "脂肪",
+    "saturated": "飽和脂肪",
+    "trans": "反式脂肪",
+    "carbohydrate": "碳水化合物",
+    "sugar": "糖",
+    "sodium": "鈉",
+    "calcium": "鈣",
+    "iron": "鐵",
+    "vitamins": "維生素",
+    "cholesterol": "膽固醇",
+    "fiber": "膳食纖維",
+    "potassium": "鉀",
+    "amino":"胺基酸",
+    "minerals":"礦物質"
+}
