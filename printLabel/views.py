@@ -54,7 +54,7 @@ def nutritionFacts(request):
     X = float(request.POST.get('nutritionX')) *8
     Y = float(request.POST.get('nutritionY')) *8
     option = request.POST.getlist('options')
-    weight = int(request.POST.get('weight'))
+    weight = float(request.POST.get('weight'))
     servings = request.POST.get('servings')
     optionList = request.POST.get('optionList')
     optionList = list(eval(optionList).keys())
