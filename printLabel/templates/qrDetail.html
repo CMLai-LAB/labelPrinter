@@ -7,13 +7,13 @@
     <h1>QRcode信息</h1>
     <form action="/qrCode/" method="post">
         {% csrf_token %}
-        <h3>QRcode名稱&#12288;<input type="text" name="qrName" placeholder="{{itemName}}" value="{{itemName}}"><h3>
-        <h3 style="display: inline-block;">X 座標&#12288;<input type="text" name="qrX" placeholder="{{X}}" value="{{X}}"></h3> <p style="display: inline-block;">mm<p>
-        <h3 style="display: inline-block;">Y 座標&#12288;<input type="text" name="qrY" placeholder="{{Y}}" value="{{Y}}"></h3> <p style="display: inline-block;">mm<p>
-        <h3>錯誤修正率&#12288;<input type="text" placeholder="{{ECC}}(L、M、Q、H)" name="ECC" value="{{ECC}}"><h3></h3>
-        <h3>掃描內容&#12288;<input type="text" placeholder="{{content}}" name="qrContent" value="{{content}}"><h3>
-        <h3>QRcode大小&#12288;<input type="text" placeholder="{{size}}(1~10)" name="width" value="{{width}}"><h3>
-        <h3>旋轉角度&#12288;<input type="text" placeholder="{{rotation}}" name="rotation" value="{{rotation}}"><h3>
+        <h3>QRcode名稱&#12288;<input type="text" name="qrName" placeholder="{{itemName}}" value="{{itemName}}" required><h3>
+        <h3 style="display: inline-block;">X 座標&#12288;<input type="text" name="qrX" placeholder="{{X}}" value="{{X}}" required></h3> <p style="display: inline-block;">mm<p>
+        <h3 style="display: inline-block;">Y 座標&#12288;<input type="text" name="qrY" placeholder="{{Y}}" value="{{Y}}" required></h3> <p style="display: inline-block;">mm<p>
+        <h3>錯誤修正率&#12288;<input type="text" placeholder="{{ECC}}(L、M、Q、H)" name="ECC" value="{{ECC}}" required><h3></h3>
+        <h3>掃描內容&#12288;<input type="text" placeholder="{{content}}" name="qrContent" value="{{content}}" required><h3>
+        <h3>QRcode大小&#12288;<input type="text" placeholder="{{size}}(1~10)" name="width" value="{{width}}" required><h3>
+        <h3>旋轉角度&#12288;<input type="text" placeholder="{{rotation}}" name="rotation" value="{{rotation}}" required><h3>
         <button type="submit">完成</button>
     </form>
 </body>
