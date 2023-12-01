@@ -7,18 +7,18 @@
     <h1>營養標示信息</h1>
     <form action="/nutritionFacts/" method="post">
         {% csrf_token %}
-        <h3>標示名稱&#12288;<input type="text" name="nutritionName" placeholder="{{itemName}}" value="{{itemName}}"></h3>
-        <h3 style="display: inline-block;">X 座標&#12288;<input type="text" name="nutritionX" placeholder="{{X}}" value="{{X}}"></h3> <p style="display: inline-block;">mm</p><br>
-        <h3 style="display: inline-block;">Y 座標&#12288;<input type="text" name="nutritionY" placeholder="{{Y}}" value="{{Y}}"></h3> <p style="display: inline-block;">mm</p><br>
-        <h3 style="display: inline-block;">每一份量 <input type="text" name="weight" placeholder="{{weight}}" value="{{weight}}"></h3> <p style="display: inline-block;">克</p><br>
-        <h3 style="display: inline-block;">本包裝含 <input type="text" name="servings" placeholder="{{servings}}" value="{{servings}}"></h3> <p style="display: inline-block;">份</p><br>
+        <h3>標示名稱&#12288;<input type="text" name="nutritionName" placeholder="{{itemName}}" value="{{itemName}}" required></h3>
+        <h3 style="display: inline-block;">X 座標&#12288;<input type="text" name="nutritionX" placeholder="{{X}}" value="{{X}}" required></h3> <p style="display: inline-block;">mm</p><br>
+        <h3 style="display: inline-block;">Y 座標&#12288;<input type="text" name="nutritionY" placeholder="{{Y}}" value="{{Y}}" required></h3> <p style="display: inline-block;">mm</p><br>
+        <h3 style="display: inline-block;">每一份量 <input type="text" name="weight" placeholder="{{weight}}" value="{{weight}}" required></h3> <p style="display: inline-block;">克</p><br>
+        <h3 style="display: inline-block;">本包裝含 <input type="text" name="servings" placeholder="{{servings}}" value="{{servings}}" required></h3> <p style="display: inline-block;">份</p><br>
         {% for options ,value in option.items %} 
             {% if options == "鈉"%}
-                <h3 style="display: inline-block;">鈉 <input type="text" name="options" placeholder={{value}} value="{{value}}"></h3> <p style="display: inline-block;">毫克</p><br>
+                <h3 style="display: inline-block;">鈉 <input type="text" name="options" placeholder={{value}} value="{{value}}" required></h3> <p style="display: inline-block;">毫克</p><br>
             {% elif options == "heat" %}
-                <h3 style="display: inline-block;">熱量 <input type="text" name="options" placeholder="{{value}}" value="{{value}}"></h3> <p style="display: inline-block;">大卡</p><br>
+                <h3 style="display: inline-block;">熱量 <input type="text" name="options" placeholder="{{value}}" value="{{value}}" required></h3> <p style="display: inline-block;">大卡</p><br>
             {% else %}
-                <h3 style="display: inline-block;">{{options}} <input type="text" name="options" placeholder="{{value}}" value="{{value}}"></h3> <p style="display: inline-block;">公克</p><br>
+                <h3 style="display: inline-block;">{{options}} <input type="text" name="options" placeholder="{{value}}" value="{{value}}" required></h3> <p style="display: inline-block;">公克</p><br>
             {% endif %}
         {% endfor %}
         <button type="submit" value="{{option}}" name="optionList">完成</button>

@@ -1,1 +1,1 @@
-{"\u6e2c\u8a66": {"paperWidth": "100", "paperHeight": "85", "density": "15"}}
+{"\u6e2c\u8a66": {"paperWidth": "100", "paperHeight": "85", "density": "15", "\u6e2c\u8a66\u7528": {"type": "\u71df\u990a\u6a19\u7c64", "X": 180.0, "Y": 100.0, "weight": 22.5, "servings": "1", "heat": "213", "portain": "213", "fat": "213", "saturated": "213", "trans": "213", "carbohydrate": "213", "sugar": "213", "sodium": "213"}, "\u540d\u5b57\u6253\u9577\u4e00\u9ede": {"type": "\u6587\u5b57", "X": 80, "Y": 600, "size": "4", "content": "Test Django Print"}}}
