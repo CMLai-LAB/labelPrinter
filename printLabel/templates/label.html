@@ -47,7 +47,7 @@
         <!-- 編輯按鈕 -->
         <form style="display: inline-block;" action="/detail/" method="post">
             {% csrf_token %} 
-            <button name="editButton" value={{item}} onclick="confirmEdit(event)">查看資訊</button>
+            <button type="submit" name="editButton" value="{{item}}" onclick="confirmEdit(event)">查看資訊</button>
         </form>
         <br><br>
     {% endfor %}
@@ -55,7 +55,7 @@
    
     <canvas id="myCanvas" width="410" height="320" style="border:1px solid #000000; position:absolute; right:200px; top: 100px;"></canvas>
     <script>
-        function confirmEit(e){
+        function confirmEdit(e){
             if (!confirm("確定要編輯嗎?")){
                 e.preventDefault();
             }

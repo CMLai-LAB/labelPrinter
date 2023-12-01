@@ -18,5 +18,5 @@ urlpatterns = [
     path('drawOnHtml/',views.drawOnHtml,name='drawOnHtml'),
     path('deleteItem/',views.deleteItem,name='deleteItem'),
     path('detail/',views.detail,name='detail'),
-
+    path('findLabel/',views.findLabel,name='findLabel'),
 ]
