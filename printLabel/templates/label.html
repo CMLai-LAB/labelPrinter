@@ -3,6 +3,8 @@
 <head>
     <title>Print Label</title>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+    {% load static %}
+    <link rel="stylesheet" type="text/css" href="{% static 'printLabel/css/button.css' %}">
 </head>
 <body>
     <h1>{{paperName}}</h1>
@@ -52,6 +54,9 @@
         <br><br>
     {% endfor %}
    
+    <a href="/">
+        <button class="shape-ex11">回標籤頁</button>
+    </a>
    
     <canvas id="myCanvas" width="410" height="320" style="border:1px solid #000000; position:absolute; right:200px; top: 100px;"></canvas>
     <script>

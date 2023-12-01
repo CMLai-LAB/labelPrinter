@@ -2,57 +2,10 @@
 <html>
 <head>
     <title>Create Label</title>
+    {% load static %}
+    <link rel="stylesheet" type="text/css" href="{% static 'printLabel/css/button.css' %}">
 </head>
-<style>
-    .shape-ex11{
-    width: 150px;
-    height: 40px;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    cursor: pointer;
-    line-height: 40px;
-    color: #000;
-    background-color: transparent;
-    position: relative;
-    transition: all .3s linear;
-    }
-    .shape-ex11 > p{
-        position: relative;
-        z-index: 1;
-    }
-    .shape-ex11::before{
-        content: "";
-        width: 20px;
-        height: 20px;
-        display: block;
-        box-sizing: border-box;
-        border-top: 1px solid #000;
-        border-left: 1px solid #000;
-        position: absolute;
-        top: 0;
-        left: 0;
-        transition: all .3s linear;
-    }
-    .shape-ex11::after{
-        content: "";
-        width: 20px;
-        height: 20px;
-        display: block;
-        box-sizing: border-box;
-        border-bottom: 1px solid #000;
-        border-right: 1px solid #000;
-        position: absolute;
-        bottom: 0;
-        right: 0;
-        transition: all .3s ease;
-    }
-    .shape-ex11:hover::before,
-    .shape-ex11:hover::after{
-        width: 100%;
-        height: 100%;
-    }
-</style>
+
 <body>
     <div style="display: inline-block; position: absolute; left: 300px; top: 50px;">
         <h1>選擇標籤</h1>
