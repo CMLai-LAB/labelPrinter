@@ -7,7 +7,7 @@
     <h1>營養標示信息</h1>
     <form action="/nutritionFacts/" method="post">
         {% csrf_token %}
-        <h3>標示名稱&#12288;<input type="text" name="nutritionName" placeholder="{{itemName}}" value="{{itemName}}"></h3>
+        <h3>標示名稱&#12288;<input type="text" name="nutritionName" placeholder="{{itemName}}" value="{{itemName}}" required></h3>
         <h3 style="display: inline-block;">X 座標&#12288;<input type="text" name="nutritionX" placeholder="{{X}}" value="{{X}}" required></h3> <p style="display: inline-block;">mm</p><br>
         <h3 style="display: inline-block;">Y 座標&#12288;<input type="text" name="nutritionY" placeholder="{{Y}}" value="{{Y}}" required></h3> <p style="display: inline-block;">mm</p><br>
         <h3 style="display: inline-block;">每一份量 <input type="text" name="weight" placeholder="{{weight}}" value="{{weight}}" required></h3> <p style="display: inline-block;">克</p><br>

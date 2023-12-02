@@ -2,29 +2,44 @@
 <html>
 <head>
     <title>Create Label</title>
+    {% load static %}
+    <link rel="stylesheet" type="text/css" href="{% static 'printLabel/css/button.css' %}">
 </head>
+
 <body>
-    <h1>建立標籤</h1>
-    <p style="color: red;">{{warning}}</p>
-    <p style="color: yellow;">{{dir}}</p>
-    <form action="/setup/" method="post">
-        {% csrf_token %}
-        標籤名稱：
-        <input type="text" name="paperName" required/>
+    <div style="display: inline-block; position: absolute; left: 300px; top: 50px;">
+        <h1>選擇標籤</h1>
+        {% for paper in papers %}
+        <form action="/findLabel/" method="post">
+            {% csrf_token %}
+            <button class="shape-ex11" name="paperName" value="{{paper}}">{{paper}}</button>
+        </form>
         <br><br>
-        紙張長度: 
-        <input type="text" name="paperWidth" placeholder="mm" required/>
-        <br><br>
-        紙張寬度: 
-        <input type="text" name="paperHeight" placeholder="mm" required/>
-        <br><br>
-        印刷濃度: 
-        <input type="text" name="density" placeholder="0~15" required/>
-        <br><br>
-        <!-- DPI : 
-        <input type="text" name="DPI" placeholder="200、300" required/>
-        <br><br> -->
-        <button type="submit" name="setup">建立標籤</button>
-    </form>
+        {% endfor %}
+    </div>
+    
+    <div style="display: inline-block; position: absolute; right: 300px; top: 50px;">
+        <h1>建立標籤</h1>
+        <p style="color: red;">{{warning}}</p>
+        <form action="/setup/" method="post">
+            {% csrf_token %}
+            標籤名稱：
+            <input type="text" name="paperName" required/>
+            <br><br>
+            紙張長度: 
+            <input type="text" name="paperWidth" placeholder="mm" required/>
+            <br><br>
+            紙張寬度: 
+            <input type="text" name="paperHeight" placeholder="mm" required/>
+            <br><br>
+            印刷濃度: 
+            <input type="text" name="density" placeholder="0~15" required/>
+            <br><br>
+            <!-- DPI : 
+            <input type="text" name="DPI" placeholder="200、300" required/>
+            <br><br> -->
+            <button type="submit" name="setup">建立標籤</button>
+        </form>
+    </div>
 </body>
 </html>

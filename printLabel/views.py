@@ -5,21 +5,22 @@ from django.http import JsonResponse
 from django.shortcuts import render, HttpResponse
 import ctypes
 import json
+import os
 
 # Create your views here.
-
 def setup(request):
-    # Get paper size and density
     global paperName
+    # global tsclibrary
+
+    # Get paper size and density
     paperWidth = request.POST.get('paperWidth')
     paperHeight = request.POST.get('paperHeight')
     density = request.POST.get('density')
     paperName = request.POST.get('paperName')
-    # Declare tsclibrary as global variable
-    # global tsclibrary 
 
-    # # Connect to printer and .dll
+    # Connect to printer and .dll
     # try:
+    #     # Connect to printer and .dll
     #     tsclibrary = ctypes.WinDLL("./printLabel/TSCLIB.dll")
     #     # tsclibrary = ctypes.WinDLL("./printLabel/tsclibnet.dll")
     #     tsclibrary.openportW("USB")
@@ -27,7 +28,7 @@ def setup(request):
     #     print("open port fail")
     #     return render(request,'index.html',{"warning":"沒有連接標籤機"})
 
-    # # Setup printer
+    # Setup printer
     # tsclibrary.sendcommandW("DENSITY "+str(density))
     # tsclibrary.sendcommandW("SIZE " + str(paperWidth) +" mm, " + str(paperHeight) +" mm")
     # tsclibrary.clearbuffer()
@@ -39,8 +40,7 @@ def setup(request):
     # Send message to label.html
     paperSize = "紙張大小: "+str(paperWidth)+"mm * "+str(paperHeight)+"mm"
     density = "濃度: "+str(density)
-    global positionDict
-    positionDict = {}
+
     return render(request,'label.html',{"paperName":paperName,"density":density,"paperSize":paperSize})
 
 """setup 列印設定
@@ -54,7 +54,7 @@ def nutritionFacts(request):
     X = float(request.POST.get('nutritionX')) *8
     Y = float(request.POST.get('nutritionY')) *8
     option = request.POST.getlist('options')
-    weight = int(request.POST.get('weight'))
+    weight = float(request.POST.get('weight'))
     servings = request.POST.get('servings')
     optionList = request.POST.get('optionList')
     optionList = list(eval(optionList).keys())
@@ -69,6 +69,7 @@ def nutritionFacts(request):
         for j in range(0,len(english)):
             if optionList[i] == chinese[j]:
                 optionList[i] = english[j]
+    print(optionList)
     ############################
     with open("./printLabel/commandTxt/"+str(paperName)+".json","r") as jsonFile:
             labelMessage = json.load(jsonFile)
@@ -93,12 +94,12 @@ def nutritionFacts(request):
     # tsclibrary.sendcommandW('BOX '+str(X)+', '+str(Y+110)+', '+str(X+400)+', '+str(Y+150)+', 1')
     # tsclibrary.sendcommandW('BOX '+str(X)+', '+str(Y+150)+', '+str(X+400)+', '+str(Y+160+25*length)+', 1')
 
-    # # serving size
+    # serving size
     # tsclibrary.sendcommandW('TEXT '+str(X+10)+', '+str(Y+60)+',"chinese", 0, 1, 1, "Each contains '
-    #                         +str(weight)+' grams"')
+                            # +str(weight)+' grams"')
     
     # tsclibrary.sendcommandW('TEXT '+str(X+10)+', '+str(Y+85)+',"chinese", 0, 1, 1, "This contains '
-    #                         +str(servings)+' package"')
+                            # +str(servings)+' package"')
 
     # tsclibrary.sendcommandW('TEXT '+str(X+200)+', '+str(Y+120)+',"chinese", 0, 1, 1, "1 pack"')
     # tsclibrary.sendcommandW('TEXT '+str(X+300)+', '+str(Y+120)+',"chinese", 0, 1, 1, "100 g"')
@@ -239,7 +240,7 @@ def text(request):
     createdList = dict(zip(createdList,typeList))
 
     return render(request,'label.html',{"paperName":paperName,"paperSize":paperSize,"density":density,
-                                        "createdList":createdList,"positionDict":positionDict})
+                                        "createdList":createdList})
 
 def printLabel(request):
     copy = request.POST.get('copy')
@@ -247,7 +248,12 @@ def printLabel(request):
     return render(request,'finishPrint.html')
 
 def index(request):
-    return render(request,'index.html')
+    papers = os.listdir("./printLabel/commandTxt")
+    for i in range(0,len(papers)):
+        if 'json' in papers[i]:
+            papers[i] = papers[i].replace('.json','')
+    print(papers)
+    return render(request,'index.html',{"papers":papers})
 
 def textSettings(request):
     return render(request,'textSettings.html',{"X":"X","Y":"Y"})
@@ -356,14 +362,16 @@ def deleteItem(request):
     createdList = dict(zip(createdList,typeList))
 
     return render(request,'label.html',{"paperName":paperName,"paperSize":paperSize,"density":density,
-                                        "createdList":createdList,"positionDict":positionDict})
+                                        "createdList":createdList})
 
 def detail(request):
     itemName = request.POST.get('editButton')
 
     with open("./printLabel/commandTxt/"+str(paperName)+".json","r",encoding='utf-8') as jsonFile:
         labelMessage = json.load(jsonFile)
+    
     itemType = labelMessage["%s"%paperName]["%s"%itemName]["type"]
+   
     if itemType == "文字":
         size = labelMessage["%s"%paperName]["%s"%itemName]["size"]
         content = labelMessage["%s"%paperName]["%s"%itemName]["content"]
@@ -401,8 +409,8 @@ def detail(request):
     elif itemType == "營養標籤":
         option = list(labelMessage["%s"%paperName]["%s"%itemName].keys())[5:]
         optionValue = list(labelMessage["%s"%paperName]["%s"%itemName].values())[5:]
-        X = labelMessage["%s"%paperName]["%s"%itemName]["X"] /8
-        Y = labelMessage["%s"%paperName]["%s"%itemName]["Y"] /8
+        X = labelMessage["%s"%paperName]["%s"%itemName]["X"] //8
+        Y = labelMessage["%s"%paperName]["%s"%itemName]["Y"] //8
         weight = labelMessage["%s"%paperName]["%s"%itemName]["weight"]
         servings = labelMessage["%s"%paperName]["%s"%itemName]["servings"]
 
@@ -428,3 +436,41 @@ def detail(request):
             json.dump(labelMessage,jsonFile)
         """"""
         return render(request,'nutritionDetail.html',{"itemName":itemName,"option":option,"X":X,"Y":Y,"weight":weight,"servings":servings})
+    
+def findLabel(request):
+    global paperName
+    # global tsclibrary
+
+    # Connect to printer and .dll
+    # try:
+    #     # Connect to printer and .dll
+    #     tsclibrary = ctypes.WinDLL("./printLabel/TSCLIB.dll")
+    #     # tsclibrary = ctypes.WinDLL("./printLabel/tsclibnet.dll")
+    #     tsclibrary.openportW("USB")
+    # except:
+    #     print("open port fail")
+    #     return render(request,'index.html',{"warning":"沒有連接標籤機"})
+    
+    paperName = request.POST.get('paperName')
+
+    with open("./printLabel/commandTxt/"+str(paperName)+".json","r") as jsonFile:
+        labelMessage = json.load(jsonFile)
+    created = labelMessage['%s'%paperName].keys()
+    createdList = list(created)
+    createdList = createdList[3:]
+    typeList = []
+    for i in range(0,len(createdList)):
+        types = labelMessage['%s'%paperName]['%s'%createdList[i]]['type']
+        typeList.append(types)
+    # 把標籤名稱跟累型合在一起
+    createdList = dict(zip(createdList,typeList))
+
+    paperWidth = labelMessage['%s'%paperName]['paperWidth']
+    paperHeight = labelMessage['%s'%paperName]['paperHeight']
+    density = labelMessage['%s'%paperName]['density']
+
+    # Send message to label.html
+    paperSize = "紙張大小: "+str(paperWidth)+"mm * "+str(paperHeight)+"mm"
+    density = "濃度: "+str(density)
+    print('createdList :',createdList)
+    return render(request,'label.html',{"paperName":paperName,"density":density,"paperSize":paperSize,"createdList":createdList})

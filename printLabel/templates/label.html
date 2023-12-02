@@ -3,6 +3,8 @@
 <head>
     <title>Print Label</title>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+    {% load static %}
+    <link rel="stylesheet" type="text/css" href="{% static 'printLabel/css/button.css' %}">
 </head>
 <body>
     <h1>{{paperName}}</h1>
@@ -37,23 +39,28 @@
 
     {% for item, type in createdList.items %}
         {{item}} ({{type}})
+
         <!-- 刪除按鈕 -->
-        <form style="display: inline-block;" action="/deleteItem/" method="post">
+        <form  style="display: inline-block;" action="/deleteItem/" method="post">
             {% csrf_token %}
-            <button name="deleteItemButton" value={{item}} onclick="confirmDelete(event)">刪除</button><br>
+            <button name="deleteItemButton" value="{{item}}" onclick="confirmDelete(event)">刪除</button>
         </form>
         &nbsp;
         <!-- 編輯按鈕 -->
         <form style="display: inline-block;" action="/detail/" method="post">
             {% csrf_token %} 
-            <button name="editButton" value={{item}} onclick="confirmEdit(event)">查看資訊</button><br>
+            <button type="submit" name="editButton" value="{{item}}" onclick="confirmEdit(event)">查看資訊</button>
         </form>
         <br><br>
     {% endfor %}
    
+    <a href="/">
+        <button class="shape-ex11">回標籤頁</button>
+    </a>
+   
     <canvas id="myCanvas" width="410" height="320" style="border:1px solid #000000; position:absolute; right:200px; top: 100px;"></canvas>
     <script>
-        function confirmEit(e){
+        function confirmEdit(e){
             if (!confirm("確定要編輯嗎?")){
                 e.preventDefault();
             }
