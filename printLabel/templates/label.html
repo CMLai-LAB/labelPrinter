@@ -43,7 +43,7 @@
         <!-- 刪除按鈕 -->
         <form  style="display: inline-block;" action="/deleteItem/" method="post">
             {% csrf_token %}
-            <button name="deleteItemButton" value={{item}} onclick="confirmDelete(event)">刪除</button>
+            <button name="deleteItemButton" value="{{item}}" onclick="confirmDelete(event)">刪除</button>
         </form>
         &nbsp;
         <!-- 編輯按鈕 -->
