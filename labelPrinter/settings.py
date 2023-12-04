@@ -76,8 +76,14 @@ WSGI_APPLICATION = 'labelPrinter.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
+        'ENGINE': 'mssql',
+        'HOST':'ASUS-TUF-GAMING\SQLEXPRESS',
+        'NAME': 'posSystem',
+        'USER': '',
+        'PASSWORD': '',
+        'OPTIONS': {
+            'driver': 'ODBC Driver 17 for SQL Server',
+        },
     }
 }
 
