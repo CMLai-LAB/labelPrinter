@@ -252,7 +252,6 @@ def index(request):
     for i in range(0,len(papers)):
         if 'json' in papers[i]:
             papers[i] = papers[i].replace('.json','')
-    print(papers)
     return render(request,'index.html',{"papers":papers})
 
 def textSettings(request):
@@ -452,9 +451,11 @@ def findLabel(request):
     #     return render(request,'index.html',{"warning":"沒有連接標籤機"})
     
     paperName = request.POST.get('paperName')
-
-    with open("./printLabel/commandTxt/"+str(paperName)+".json","r") as jsonFile:
-        labelMessage = json.load(jsonFile)
+    try:
+        with open("./printLabel/commandTxt/"+str(paperName)+".json","r") as jsonFile:
+            labelMessage = json.load(jsonFile)
+    except:
+        return render(request,'403.html',{"warning":"此紙張設定為空"})
     created = labelMessage['%s'%paperName].keys()
     createdList = list(created)
     createdList = createdList[3:]
