@@ -5,7 +5,7 @@
 </head>
 <body>
     <h1>QRocde設定</h1>
-    
+    <p style="color: red;">{{warning}}</p>
     <form action="/qrCode/" method="post">
         {% csrf_token %}
         QRcode名稱 <input type="text" name="qrName" required/><br><br>

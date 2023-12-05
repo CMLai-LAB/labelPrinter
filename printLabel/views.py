@@ -3,6 +3,7 @@
 
 from django.http import JsonResponse
 from django.shortcuts import render, HttpResponse
+from django.db import connection
 import ctypes
 import json
 import os
@@ -27,7 +28,26 @@ def setup(request):
     except:
         print("open port fail")
         return render(request,'index.html',{"warning":"沒有連接標籤機"})
-
+    # create table
+    cursor = connection.cursor()
+    cursor.execute("""if not exists (select * from sysobjects where name='paperSetup')CREATE TABLE paperSetup("paperName" varchar(255) PRIMARY KEY,"paperWidth" float,"paperHeight" float,"density" int);""")
+    # insert into SQL
+    cursor = connection.cursor()
+    cursor.execute("SELECT * FROM paperSetup;")
+    papers = cursor.fetchall()
+    for name in papers:
+        name = list(name)
+        print(name[0])
+        if paperName == name[0]:
+            papers = os.listdir("./printLabel/commandTxt")
+            for i in range(0,len(papers)):
+                if 'json' in papers[i]:
+                    papers[i] = papers[i].replace('.json','')
+            print(papers)
+            return render(request,'index.html',{"warning":"標籤名稱重複","papers":papers})
+        
+    cursor.execute("""INSERT INTO paperSetup("paperName","paperWidth","paperHeight","density")VALUES ('%s','%f','%f','%d');"""%(paperName,float(paperWidth),float(paperHeight),int(density)))
+    
     # Setup printer
     tsclibrary.sendcommandW("DENSITY "+str(density))
     tsclibrary.sendcommandW("SIZE " + str(paperWidth) +" mm, " + str(paperHeight) +" mm")
@@ -69,8 +89,37 @@ def nutritionFacts(request):
         for j in range(0,len(english)):
             if optionList[i] == chinese[j]:
                 optionList[i] = english[j]
-    print(optionList)
     ############################
+
+    # create table
+    cursor = connection.cursor()
+    cursor.execute("""if not exists (select * from sysobjects where name='nutrition')
+                   create table nutrition(
+                    "paperName" varchar(255),
+                    "nutritionName" varchar(255),
+                    "X" float,
+                    "Y" float,
+                    "weight" float,
+                    "servings" float,
+                    "heat" float,
+                    "portain" float,
+                    "fat" float,
+                    "saturated" float,
+                    "trans" float,
+                    "carbohydrate" float,
+                    "sugar" float,
+                    "sodium" float,
+                    "cholesterol" float,
+                    "amino" float,
+                    "vitamins" float,
+                    "minerals" float,
+                    "fiber" float,
+                    "potassium" float,
+                    "calcium" float,
+                    "iron" float,
+                    PRIMARY KEY (nutritionName),
+                    FOREIGN KEY(paperName)REFERENCES paperSetup(paperName) ON DELETE CASCADE);""")
+                   
     with open("./printLabel/commandTxt/"+str(paperName)+".json","r") as jsonFile:
             labelMessage = json.load(jsonFile)
 
@@ -81,11 +130,25 @@ def nutritionFacts(request):
         "weight":weight,
         "servings":servings}
     
+    # insert into SQL
+    cursor.execute("SELECT * FROM nutrition;")
+    nutritions = cursor.fetchall()
+    for name in nutritions:
+        name = list(name)
+        if nutritionName == name[1]:
+            return render(request,'nutritionOption.html',{"warning":"營養標籤名稱重複"})
+    cursor.execute("""INSERT INTO nutrition("paperName","nutritionName","X","Y","weight","servings" )
+                   VALUES ('%s','%s','%f','%f','%f','%d');"""%(paperName,nutritionName,X/8,Y/8,weight,float(servings)))
+    # 把營養標籤的內容存到json檔
     for i in range(0,len(option)):
         labelMessage["%s"%paperName]["%s"%nutritionName].update({"%s"%optionList[i]:option[i]})
-        # 把營養標籤的內容存到json檔
         with open("./printLabel/commandTxt/"+str(paperName)+".json","w") as jsonFile:
             json.dump(labelMessage,jsonFile)
+    # insert into SQL
+    for i in range(0,len(optionList)):
+        cursor.execute("""UPDATE nutrition SET "%s" = '%f' WHERE "paperName" = '%s' AND "nutritionName" = '%s';"""
+                       %(optionList[i],float(option[i]),paperName,nutritionName))
+    
     length = len(option)
     # BOX
     tsclibrary.sendcommandW('TEXT '+str(X+80)+','+str(Y+20)+',"chinese",0,1,1,"Nutrition Facts"')
@@ -106,8 +169,6 @@ def nutritionFacts(request):
 
     with open("./printLabel/commandTxt/"+str(paperName)+".json","r") as jsonFile:
             labelMessage = json.load(jsonFile)
-    # print('optionList :',optionList)
-    # print('option :',option)
 
     for l in range(0,len(option)):
         if optionList[l] == 'heat':
@@ -154,13 +215,40 @@ def nutritionFacts(request):
 
 def qrCode(request):
     qrName = request.POST.get('qrName')
-    X = int(request.POST.get('qrX'))*8
-    Y = int(request.POST.get('qrY'))*8
+    X = float(request.POST.get('qrX'))*8
+    Y = float(request.POST.get('qrY'))*8
     ECC = request.POST.get('ECC')
     width = request.POST.get('width')
     rotation = request.POST.get('rotation')
     content = request.POST.get('qrContent')
 
+    # create table
+    cursor = connection.cursor()
+    cursor.execute("""if not exists (select * from sysobjects where name='qrcode')
+                   CREATE TABLE qrcode(
+                   "paperName" varchar(255),
+                   "qrName" varchar(255),
+                   "X" float,
+                   "Y" float,
+                   "ECC" varchar(255),
+                   "width" int,
+                   "rotation" int,
+                   "content" varchar(255),
+                   PRIMARY KEY (qrName),
+                   FOREIGN KEY(paperName)REFERENCES paperSetup(paperName) ON DELETE CASCADE);""")
+    # insert into SQL
+    cursor.execute("SELECT * FROM qrcode;")
+    qrcodes = cursor.fetchall()
+    for name in qrcodes:
+        name = list(name)
+        if qrName == name[1]:
+            return render(request,'qrSettings.html',{"warning":"QRcode名稱重複"})
+        
+    cursor.execute("""INSERT INTO qrcode("paperName","qrName","X","Y","ECC","width","rotation","content")
+                     VALUES ('%s','%s','%f','%f','%s','%d','%d','%s');"""
+                   %(paperName,qrName,X/8,Y/8,ECC,int(width),int(rotation),content))
+    
+    
     # 儲存已建立的內容
     with open("./printLabel/commandTxt/"+str(paperName)+".json","r") as jsonFile:
         labelMessage = json.load(jsonFile)
@@ -199,10 +287,33 @@ def qrCode(request):
 
 def text(request):
     textName = request.POST.get('textName')
-    X = int(request.POST.get('textX'))*8
-    Y = int(request.POST.get('textY'))*8
+    X = float(request.POST.get('textX'))*8
+    Y = float(request.POST.get('textY'))*8
     size = request.POST.get('textSize')
     content = request.POST.get('textContent')
+
+    # create table
+    cursor = connection.cursor()
+    cursor.execute("""if not exists (select * from sysobjects where name='text')
+                   CREATE TABLE text(
+                   "paperName" varchar(255),
+                   "textName" varchar(255),
+                   "X" float,
+                   "Y" float,
+                   "size" int,
+                   "content" varchar(255),
+                   PRIMARY KEY (textName),
+                   FOREIGN KEY(paperName)REFERENCES paperSetup(paperName) ON DELETE CASCADE);""")
+    # insert into SQL
+    cursor.execute("SELECT * FROM text;")
+    texts = cursor.fetchall()
+    for name in texts:
+        name = list(name)
+        if textName == name[1]:
+            return render(request,'textSettings.html',{"warning":"文字名稱重複"})
+    
+    cursor.execute("""INSERT INTO text("paperName","textName","X","Y","size","content")
+                   VALUES ('%s','%s','%f','%f','%d','%s');"""%(paperName,textName,X/8,Y/8,int(size),content))
 
     tsclibrary.sendcommandW('TEXT '+str(X)+', '+str(Y)+',"'+str(size)+'", 0, 1, 1, "'+content+'"')
     tsclibrary.printerfontW('"'+str(X)+'"', '"'+str(Y+120)+'"', "TST24.BF2","0", "1", "1", "新北市")
@@ -248,11 +359,11 @@ def printLabel(request):
     return render(request,'finishPrint.html')
 
 def index(request):
+
     papers = os.listdir("./printLabel/commandTxt")
     for i in range(0,len(papers)):
         if 'json' in papers[i]:
             papers[i] = papers[i].replace('.json','')
-    print(papers)
     return render(request,'index.html',{"papers":papers})
 
 def textSettings(request):
@@ -330,11 +441,24 @@ def deleteItem(request):
     with open("./printLabel/commandTxt/"+str(paperName)+".json","r",encoding='utf-8') as jsonFile:
         labelMessage = json.load(jsonFile)
     itemName = request.POST.get('deleteItemButton')
-    
+    """刪除"""
+    classification = labelMessage["%s"%paperName]["%s"%itemName]["type"]
+    if classification == "文字":
+        cursor = connection.cursor()
+        cursor.execute("""DELETE FROM text WHERE "paperName" = '%s' AND "textName" = '%s';"""%(paperName,itemName))
+    elif classification == "QRcode":
+        cursor = connection.cursor()
+        cursor.execute("""DELETE FROM qrcode WHERE "paperName" = '%s' AND "qrName" = '%s';"""%(paperName,itemName))
+    elif classification == "營養標籤":
+        cursor = connection.cursor()
+        cursor.execute("""DELETE FROM nutrition WHERE "paperName" = '%s' AND "nutritionName" = '%s';"""%(paperName,itemName))
+    """"""
     del labelMessage["%s"%paperName]["%s"%itemName]
 
     with open("./printLabel/commandTxt/"+str(paperName)+".json","w",encoding='utf-8') as jsonFile:
         json.dump(labelMessage,jsonFile)
+    """"""""""""
+
     # 讀取已建立的內容
     with open("./printLabel/commandTxt/"+str(paperName)+".json","r",encoding='utf-8') as jsonFile:
         labelMessage = json.load(jsonFile)
@@ -385,6 +509,9 @@ def detail(request):
 
         with open("./printLabel/commandTxt/"+str(paperName)+".json","w",encoding='utf-8') as jsonFile:
             json.dump(labelMessage,jsonFile)
+
+        cursor = connection.cursor()
+        cursor.execute("""DELETE FROM text WHERE "paperName" = '%s' AND "textName" = '%s';"""%(paperName,itemName))
         """"""
         return render(request,'textDetail.html',{"itemName":itemName,"size":size,"content":content,"X":X,"Y":Y})
     
@@ -397,6 +524,9 @@ def detail(request):
         rotation = labelMessage["%s"%paperName]["%s"%itemName]["rotation"]
 
         """Delete item first"""
+        cursor = connection.cursor()
+        cursor.execute("""DELETE FROM qrcode WHERE "paperName" = '%s' AND "qrName" = '%s';"""%(paperName,itemName))
+        """"""
         with open("./printLabel/commandTxt/"+str(paperName)+".json","r",encoding='utf-8') as jsonFile:
             labelMessage = json.load(jsonFile)
         del labelMessage["%s"%paperName]["%s"%itemName]
@@ -472,5 +602,4 @@ def findLabel(request):
     # Send message to label.html
     paperSize = "紙張大小: "+str(paperWidth)+"mm * "+str(paperHeight)+"mm"
     density = "濃度: "+str(density)
-    print('createdList :',createdList)
     return render(request,'label.html',{"paperName":paperName,"density":density,"paperSize":paperSize,"createdList":createdList})
