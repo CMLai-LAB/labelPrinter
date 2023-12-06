@@ -154,8 +154,8 @@ def nutritionFacts(request):
 
 def qrCode(request):
     qrName = request.POST.get('qrName')
-    X = int(request.POST.get('qrX'))*8
-    Y = int(request.POST.get('qrY'))*8
+    X = float(request.POST.get('qrX'))*8
+    Y = float(request.POST.get('qrY'))*8
     ECC = request.POST.get('ECC')
     width = request.POST.get('width')
     rotation = request.POST.get('rotation')
@@ -199,13 +199,14 @@ def qrCode(request):
 
 def text(request):
     textName = request.POST.get('textName')
-    X = int(request.POST.get('textX'))*8
-    Y = int(request.POST.get('textY'))*8
+    X = float(request.POST.get('textX'))*8
+    Y = float(request.POST.get('textY'))*8
     size = request.POST.get('textSize')
     content = request.POST.get('textContent')
 
     tsclibrary.sendcommandW('TEXT '+str(X)+', '+str(Y)+',"'+str(size)+'", 0, 1, 1, "'+content+'"')
-    tsclibrary.printerfontW('"'+str(X)+'"', '"'+str(Y+120)+'"', "TST24.BF2","0", "1", "1", "新北市")
+    tsclibrary.sendcommandW('TEXT '+str(X)+', '+str(Y+120)+',"',"FONT001",'", 0, 1, 1, "'+content+'"')
+    
     # 儲存已建立的內容
     with open("./printLabel/commandTxt/"+str(paperName)+".json","r") as jsonFile:
         labelMessage = json.load(jsonFile)
@@ -252,7 +253,7 @@ def index(request):
     for i in range(0,len(papers)):
         if 'json' in papers[i]:
             papers[i] = papers[i].replace('.json','')
-    print(papers)
+
     return render(request,'index.html',{"papers":papers})
 
 def textSettings(request):
@@ -266,7 +267,7 @@ def printSettings(request):
 
 def restart(request):
     # restart printer
-    # tsclibrary.sendcommandW(chr(27) + '!R')
+    tsclibrary.sendcommandW(chr(27) + '!R')
     tsclibrary.closeport()
     return render(request,'index.html')
 
@@ -472,5 +473,5 @@ def findLabel(request):
     # Send message to label.html
     paperSize = "紙張大小: "+str(paperWidth)+"mm * "+str(paperHeight)+"mm"
     density = "濃度: "+str(density)
-    print('createdList :',createdList)
+
     return render(request,'label.html',{"paperName":paperName,"density":density,"paperSize":paperSize,"createdList":createdList})
