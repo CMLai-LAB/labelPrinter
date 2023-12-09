@@ -12,7 +12,8 @@
         {% for paper in papers %}
         <form action="/findLabel/" method="post">
             {% csrf_token %}
-            <button class="shape-ex11" name="paperName" value="{{paper}}">{{paper}}</button>
+            <button class="shape-ex11" name="paperName" value="{{paper}}" style="display: inline-block;">{{paper}}</button>
+            <button name="paperName" value="delete{{paper}}" onclick="confirmDelete(event)" style="display: inline-block;">刪除</button>
         </form>
         <br><br>
         {% endfor %}
@@ -41,5 +42,14 @@
             <button type="submit" name="setup">建立標籤</button>
         </form>
     </div>
+    <script>
+        function confirmDelete(e){
+            if (!confirm("確定要刪除嗎?")){
+                e.preventDefault();
+            }else{
+                alert("刪除成功");
+            }
+        }
+    </script>
 </body>
 </html>

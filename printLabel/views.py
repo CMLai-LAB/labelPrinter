@@ -415,7 +415,26 @@ def findLabel(request):
         return render(request,'index.html',{"warning":"沒有連接標籤機"})
     
     paperName = request.POST.get('paperName')
+    # 刪除
+    if "delete" in paperName:
+        paperName = paperName.replace("delete","") + ".json"
+        print("paperName : ",paperName)
+        # 取得commandTxt資料夾的檔案清單
+        papers = os.listdir("./printLabel/commandTxt")
 
+        for i in range(0,len(papers)):
+            if paperName == papers[i]:
+                os.remove(os.path.join("./printLabel/commandTxt", paperName))
+                break
+
+        # 回傳index.html
+        papers = os.listdir("./printLabel/commandTxt")
+        for i in range(0,len(papers)):
+            if 'json' in papers[i]:
+                papers[i] = papers[i].replace('.json','')
+            return render(request,'index.html',{"papers":papers})
+        
+    # 回傳label.html
     with open("./printLabel/commandTxt/"+str(paperName)+".json","r") as jsonFile:
         labelMessage = json.load(jsonFile)
     created = labelMessage['%s'%paperName].keys()
