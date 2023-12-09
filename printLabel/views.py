@@ -520,6 +520,9 @@ def detail(request):
         
 
         """Delete item first"""
+        cursor = connection.cursor()
+        cursor.execute("""DELETE FROM qrcode WHERE "paperName" = '%s' AND "nutritionName" = '%s';"""%(paperName,itemName))
+        """"""
         with open("./printLabel/commandTxt/"+str(paperName)+".json","r",encoding='utf-8') as jsonFile:
             labelMessage = json.load(jsonFile)
         del labelMessage["%s"%paperName]["%s"%itemName]
