@@ -4,6 +4,37 @@
     <title>Create Label</title>
     {% load static %}
     <link rel="stylesheet" type="text/css" href="{% static 'printLabel/css/button.css' %}">
+    <style>
+        .container {
+        display: flex;
+        align-items: center;
+        position: absolute;
+        top: 5%;
+        right: 5%; /* 調整這個值以達到你想要的效果 */
+    }
+
+    .container select {
+        margin-left: 10px;
+        background-color: #fff;
+        border: 1px solid #ccc;
+        border-radius: 5px;
+        padding: 10px;
+        width: 100px;
+    }
+
+    select::-ms-expand {
+        display: none;
+    }
+
+    .language-icon {
+        position: relative;
+    }
+    .container img {
+        width: 30px;
+        height: 30px;
+    }
+
+    </style>
 </head>
 
 <body>
@@ -42,6 +73,15 @@
             <button type="submit" name="setup">建立標籤</button>
         </form>
     </div>
+    <div class="container">
+        <img src="{% static 'printLabel/image/language.jpg' %}"/>
+        <select name="language" style="padding-right: 10px;">
+            <option value="chinese">中文</option>
+            <option value="english">English</option>
+            <option value="Vietnamese">Tiếng Việt</option>
+        </select>
+     </div>
+      
     <script>
         function confirmDelete(e){
             if (!confirm("確定要刪除嗎?")){
