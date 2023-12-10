@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Create Label</title>
+    {% load static %}
+    <link rel="stylesheet" type="text/css" href="{% static 'printLabel/css/button.css' %}">
+    <style>
+        .container {
+        display: flex;
+        align-items: center;
+        position: absolute;
+        top: 5%;
+        right: 5%; /* 調整這個值以達到你想要的效果 */
+    }
+
+    .container select {
+        margin-left: 10px;
+        background-color: #fff;
+        border: 1px solid #ccc;
+        border-radius: 5px;
+        padding: 10px;
+        width: 100px;
+    }
+
+    select::-ms-expand {
+        display: none;
+    }
+
+    .language-icon {
+        position: relative;
+    }
+    .container img {
+        width: 30px;
+        height: 30px;
+    }
+
+    </style>
+</head>
+
+<body>
+    <div style="display: inline-block; position: absolute; left: 25%; top: 50px;">
+        <h1>Chọn giấy</h1>
+        {% for paper in papers %}
+        <form action="/findLabel/" method="post">
+            {% csrf_token %}
+            <button class="shape-ex11" name="paperName" value="{{paper}}" style="display: inline-block;">{{paper}}</button>
+            <button name="paperName" value="delete{{paper}}" onclick="confirmDelete(event)" style="display: inline-block;">Xóa</button>
+        </form>
+        <br><br>
+        {% endfor %}
+    </div>
+    
+    <div style="display: inline-block; position: absolute; right: 25%; top: 50px;">
+        <h1>Tạo giấy</h1>
+        <p style="color: red;">{{warning}}</p>
+        <form action="/setup/" method="post">
+            {% csrf_token %}
+            Tên giấy :
+            <input type="text" name="paperName" required/>
+            <br><br>
+            Dài : 
+            <input type="text" name="paperWidth" placeholder="mm" required/>
+            <br><br>
+            Rộng : 
+            <input type="text" name="paperHeight" placeholder="mm" required/>
+            <br><br>
+            Độ đậm in : 
+            <input type="text" name="density" placeholder="0~15" required/>
+            <br><br>
+            <!-- DPI : 
+            <input type="text" name="DPI" placeholder="200、300" required/>
+            <br><br> -->
+            <button type="submit" name="setup">Tạo</button>
+        </form>
+    </div>
+    <div class="container">
+        <img src="{% static 'printLabel/image/language.jpg' %}"/>
+        <form action="" method="post">
+            {% csrf_token %}
+            <select name="language" style="padding-right: 10px;" onchange="submit()">
+                <option value="chinese">中文</option>
+                <option value="english">English</option>
+                <option value="vietnamese" selected="selected">Tiếng Việt</option>
+            </select>
+        </form>
+     </div>
+      
+    <script>
+        function confirmDelete(e){
+            if (!confirm("Bạn có chắc muốn xóa không?")){
+                e.preventDefault();
+            }else{
+                alert("Xóa thành công");
+            }
+        }
+    </script>
+</body>
+</html>

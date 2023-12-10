@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Create Label</title>
+    {% load static %}
+    <link rel="stylesheet" type="text/css" href="{% static 'printLabel/css/button.css' %}">
+    <style>
+        .container {
+        display: flex;
+        align-items: center;
+        position: absolute;
+        top: 5%;
+        right: 5%; /* 調整這個值以達到你想要的效果 */
+    }
+
+    .container select {
+        margin-left: 10px;
+        background-color: #fff;
+        border: 1px solid #ccc;
+        border-radius: 5px;
+        padding: 10px;
+        width: 100px;
+    }
+
+    select::-ms-expand {
+        display: none;
+    }
+
+    .language-icon {
+        position: relative;
+    }
+    .container img {
+        width: 30px;
+        height: 30px;
+    }
+
+    </style>
+</head>
+
+<body>
+    <div style="display: inline-block; position: absolute; left: 25%; top: 50px;">
+        <h1>Choose paper</h1>
+        {% for paper in papers %}
+        <form action="/findLabel/" method="post">
+            {% csrf_token %}
+            <button class="shape-ex11" name="paperName" value="{{paper}}" style="display: inline-block;">{{paper}}</button>
+            <button name="paperName" value="delete{{paper}}" onclick="confirmDelete(event)" style="display: inline-block;">Delete</button>
+        </form>
+        <br><br>
+        {% endfor %}
+    </div>
+    
+    <div style="display: inline-block; position: absolute; right: 25%; top: 50px;">
+        <h1>New paper</h1>
+        <p style="color: red;">{{warning}}</p>
+        <form action="/setup/" method="post">
+            {% csrf_token %}
+            Paper Name :
+            <input type="text" name="paperName" required/>
+            <br><br>
+            width :
+            <input type="text" name="paperWidth" placeholder="mm" required/>
+            <br><br>
+            Height : 
+            <input type="text" name="paperHeight" placeholder="mm" required/>
+            <br><br>
+            Density : 
+            <input type="text" name="density" placeholder="0~15" required/>
+            <br><br>
+            <!-- DPI : 
+            <input type="text" name="DPI" placeholder="200、300" required/>
+            <br><br> -->
+            <button type="submit" name="setup">Create</button>
+        </form>
+    </div>
+    <div class="container">
+        <img src="{% static 'printLabel/image/language.jpg' %}"/>
+        <form action="" method="post">
+            {% csrf_token %}
+            <select name="language" style="padding-right: 10px;" onchange="submit()">
+                <option value="chinese">中文</option>
+                <option value="english" selected="selected">English</option>
+                <option value="vietnamese">Tiếng Việt</option>
+            </select>
+        </form>
+     </div>
+      
+    <script>
+        function confirmDelete(e){
+            if (!confirm("Are you sure to delete?")){
+                e.preventDefault();
+            }else{
+                alert("Delete successfully!");
+            }
+        }
+    </script>
+</body>
+</html>

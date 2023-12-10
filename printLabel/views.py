@@ -204,11 +204,22 @@ def printLabel(request):
     return render(request,'finishPrint.html')
 
 def index(request):
-
+    global language
+    language = request.POST.get('language')
+    # set default language to chinese
+    if language == None:
+        language = 'chinese'
+    print("language : ",language)
+    # Get all papers
     papers = os.listdir("./printLabel/commandTxt")
     for i in range(0,len(papers)):
         if 'json' in papers[i]:
             papers[i] = papers[i].replace('.json','')
+    # Define language
+    if language == 'english':
+        return render(request,'index_en.html',{"papers":papers})
+    elif language == 'vietnamese':
+        return render(request,'index_vie.html',{"papers":papers})
     return render(request,'index.html',{"papers":papers})
 
 def textSettings(request):
