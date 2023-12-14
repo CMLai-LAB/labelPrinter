@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Print Label</title>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+    {% load static %}
+    <link rel="stylesheet" type="text/css" href="{% static 'printLabel/css/button.css' %}">
+</head>
+<body>
+    <h1>{{paperName}}</h1>
+    <h3>Size : {{paperSize}}</h3>
+    <h3>Density : {{density}}</h3>
+
+    <a href="/textSettings">
+        <button>Add Text</button>
+    </a>
+    <br><br>
+
+    <a href="/qrSettings">
+        <button>Add QRcode</button>
+    </a>
+    <br><br>
+
+    <a href="/nutritionOption">
+        <button>Add Nutrition Facts</button>   
+    </a>
+    <br><br>
+
+    <a href="/printSettings">
+        <button>Print</button>
+    </a>
+    <br><br>
+
+    <h3>
+        ---------------------------------------
+    </h3>  
+    <h2>Builed : </h2>
+
+    {% for item, type in createdList.items %}
+        {% if type == "文字" %}
+            {{item}} (Text)
+
+        {% elif type == "QRcode" %}
+            {{item}} (QRcode)
+
+        {% elif type == "營養標籤" %}
+            {{item}} (Nutrition Facts)
+
+        {% endif %}
+
+        <!-- 刪除按鈕 -->
+        <form  style="display: inline-block;" action="/deleteItem/" method="post">
+            {% csrf_token %}
+            <button name="deleteItemButton" value="{{item}}" onclick="confirmDelete(event)">Delete</button>
+        </form>
+        &nbsp;
+        <!-- 編輯按鈕 -->
+        <form style="display: inline-block;" action="/detail/" method="post">
+            {% csrf_token %} 
+            <button type="submit" name="editButton" value="{{item}}" onclick="confirmEdit(event)">Details</button>
+        </form>
+        <br><br>
+    {% endfor %}
+   
+    <a href="/index_en">
+        <button class="shape-ex11">Finish</button>
+    </a>
+   
+    <canvas id="myCanvas" width="410" height="320" style="border:1px solid #000000; position:absolute; right:200px; top: 100px;"></canvas>
+    <script>
+        function confirmEdit(e){
+            if (!confirm("Are you sure to make edition?")){
+                e.preventDefault();
+            }
+        }
+        function confirmDelete(e){
+            if (!confirm("Confirm Delete?")){
+                e.preventDefault();
+            }else{
+                alert("Delete successfully!");
+            }
+        }
+        var canvas = document.getElementById("myCanvas");
+        var ctx = canvas.getContext("2d");
+        $.ajax({
+            url: "/drawOnHtml",
+            type: "GET",
+            data: {
+                "message": "hello"
+            },
+            success: function(response){
+                for (k in response){
+                    if (response[k]["type"]=="文字"){
+                        var size = response[k]["size"];
+                        var content = response[k]["content"];
+                        var x = response[k]["X"];
+                        var y = response[k]["Y"];
+                        ctx.font = String(size*5+5)+"px Arial";
+                        ctx.fillText(content,x/1.9,y/2.1);
+                    }else if(response[k]["type"]=="QRcode"){
+                        var width = response[k]["width"];
+                        var name = k;
+                        var x = response[k]["X"] / 2;
+                        var y = response[k]["Y"] / 2;
+                        ctx.font = "10px Arial";
+                        ctx.fillText("QRcode:",x+width*5,y+width*10);
+                        ctx.fillText("("+k+")",x+width*8,y+width*15);
+                        ctx.rect(x,y,25*width,25*width);
+                        ctx.stroke();
+
+                    }else if(response[k]["type"]=="營養標籤"){
+                        var x = response[k]["X"] / 2;
+                        var y = response[k]["Y"] / 2.3;
+                        var weight = response[k]["weight"].toString();
+                        var servings = response[k]["servings"].toString();
+                        var length = Object.keys(response[k]).length - 5;
+                        // 最大方形
+                        ctx.rect(x,y,200,80+length*16);
+                        ctx.stroke();
+                        // 最大方形內第一條線
+                        ctx.moveTo(x,y+25);
+                        ctx.lineTo(x+200,y+25);
+                        ctx.stroke();
+                        // 最大方形內大二條線
+                        ctx.moveTo(x,y+60);
+                        ctx.lineTo(x+200,y+60);
+                        ctx.stroke();
+                        // 最大方形內第三條線
+                        ctx.moveTo(x,y+80);
+                        ctx.lineTo(x+200,y+80);
+                        ctx.stroke();
+                        // Nutritions Facts
+                        ctx.font = "11px Arial";
+                        ctx.fillText("Nutrition Facts",x+75,y+18);
+                        //  Servings Per Container
+                        ctx.font = "11px Arial";
+                        ctx.fillText('Servings size       ('+weight+'g)',x+5,y+40);
+                        // servings size
+                        ctx.font = "11px Arial";
+                        ctx.fillText(servings+' servings per container',x+5,y+55);
+                        // 1 pack
+                        ctx.font = "11px Arial";
+                        ctx.fillText("Per Serving",x+85,y+75);
+                        // 100g
+                        ctx.font = "11px Arial";
+                        ctx.fillText("Per 100g",x+150,y+75);
+                        // 營養標籤內容
+                        var count = 1;
+                        for (m in response[k]){
+                            if (m != "type" && m != "X" && m != "Y" && m != "weight" && m != "servings"){
+                                console.log(response[k][m]);
+                                if (m == "heat"){
+                                    ctx.fillText(response[k][m]+"kcal",x+95,y+3+count*15);
+                                    ctx.fillText(parseInt(response[k][m]/Number(weight)*100).toString()+"kcal",x+150,y+3+count*15);
+                                    m = "Calories";
+                                    ctx.fillText(m,x+3,y+3+count*15);
+                                }else if(m == "saturated" | m =="trans" | m == "sugar"){
+                                    ctx.fillText(response[k][m]+"g",x+95,y+3+count*15);
+                                    ctx.fillText(parseInt(response[k][m]/Number(weight)*100).toString()+"g",x+150,y+3+count*15);
+                                    if (m == "saturated"){
+                                        m = "Saturated Fat";
+                                    }else if (m == "trans"){
+                                        m = "Trans Fat";
+                                    }else{
+                                        m = "Sugars";
+                                    }
+                                    ctx.fillText(m,x+15,y+3+count*15);
+                                    
+                                }else if(m == "sodium"){
+                                    ctx.fillText(response[k][m]+"mg",x+95,y+5+count*15);
+                                    ctx.fillText(parseInt(response[k][m]/Number(weight)*100).toString()+"mg",x+150,y+3+count*15);
+                                    m = "Sodium";
+                                    ctx.fillText(m,x+3,y+3+count*15);
+
+                                }else{
+                                    ctx.fillText(response[k][m]+"g",x+95,y+3+count*15);
+                                    ctx.fillText(parseInt(response[k][m]/Number(weight)*100).toString()+"g",x+150,y+3+count*15);
+                                    if (m == "portain"){
+                                        m = "Portein";
+                                    }else if (m == "fat"){
+                                        m = "Total Fat";
+                                    }else if (m == "carbohydrate"){
+                                        m = "Carbohydrate";
+                                    }else if (m == "cholesterol"){
+                                        m = "Cholesterol";
+                                    }else if (m == "amino"){
+                                        m = "Amino";
+                                    }else if (m == "vitamins"){
+                                        m = "Vitamins";
+                                    }else if (m == "minerals"){
+                                        m = "Minerals";
+                                    }else if (m == "fiber"){
+                                        m = "Dietary Fiber";
+                                    }else if (m == "potassium"){
+                                        m = "Potassium";
+                                    }else if (m == "calcium"){
+                                        m = "Calcium";
+                                    }else if (m == "iron"){
+                                        m = "Iron";
+                                    }
+                                    
+                                    ctx.fillText(m,x+3,y+3+count*15);
+                                }
+                                
+                            }
+                            count += 1;
+                        }
+                    }
+                }    
+            },
+            error: function(error){
+                console.log(error);
+            }
+        });
+
+    </script>
+</body>
+</html>

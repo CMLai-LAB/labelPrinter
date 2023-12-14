@@ -75,7 +75,7 @@
     </div>
     <div class="container">
         <img src="{% static 'printLabel/image/language.jpg' %}"/>
-        <form action="" method="post">
+        <form action="/" method="post">
             {% csrf_token %}
             <select name="language" style="padding-right: 10px;" onchange="submit()">
                 <option value="chinese">中文</option>

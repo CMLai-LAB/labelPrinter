@@ -12,6 +12,7 @@ import os
 def setup(request):
     global paperName
     global tsclibrary
+    global language
 
     # Get paper size and density
     paperWidth = request.POST.get('paperWidth')
@@ -203,13 +204,31 @@ def printLabel(request):
     integratedExecutionCommand(paperName,int(copy))
     return render(request,'finishPrint.html')
 
+def index_en(request):
+    global language
+    # Get all papers
+    papers = os.listdir("./printLabel/commandTxt")
+    for i in range(0,len(papers)):
+        if 'json' in papers[i]:
+            papers[i] = papers[i].replace('.json','')
+    return render(request,'index_en.html',{"papers":papers})
+
+def index_vie(request):
+    global language
+    # Get all papers
+    papers = os.listdir("./printLabel/commandTxt")
+    for i in range(0,len(papers)):
+        if 'json' in papers[i]:
+            papers[i] = papers[i].replace('.json','')
+    return render(request,'index_vie.html',{"papers":papers})
+
 def index(request):
     global language
     language = request.POST.get('language')
     # set default language to chinese
     if language == None:
         language = 'chinese'
-    print("language : ",language)
+
     # Get all papers
     papers = os.listdir("./printLabel/commandTxt")
     for i in range(0,len(papers)):
@@ -223,7 +242,13 @@ def index(request):
     return render(request,'index.html',{"papers":papers})
 
 def textSettings(request):
-    return render(request,'textSettings.html',{"X":"X","Y":"Y"})
+    global language
+    if language == 'chinese':
+        return render(request,'textSettings.html',{"X":"X","Y":"Y"})
+    elif language == 'english':
+        return render(request,'textSettings_en.html',{"X":"X","Y":"Y"})
+    elif language == 'vietnamese':
+        return render(request,'textSettings_vie.html',{"X":"X","Y":"Y"})
 
 def qrSettings(request):
     return render(request,'qrSettings.html')
@@ -232,7 +257,7 @@ def printSettings(request):
     return render(request,'printSettings.html')
 
 def restart(request):
-    # restart printer
+    # restart printerf
     tsclibrary.sendcommandW(chr(27) + '!R')
     tsclibrary.closeport()
     # 回初始頁面
@@ -414,6 +439,7 @@ def detail(request):
 def findLabel(request):
     global paperName
     global tsclibrary
+    global language
 
     # Connect to printer and .dll
     try:
@@ -429,7 +455,7 @@ def findLabel(request):
     # 刪除
     if "delete" in paperName:
         paperName = paperName.replace("delete","") + ".json"
-        print("paperName : ",paperName)
+      
         # 取得commandTxt資料夾的檔案清單
         papers = os.listdir("./printLabel/commandTxt")
 
@@ -463,9 +489,16 @@ def findLabel(request):
     density = labelMessage['%s'%paperName]['density']
 
     # Send message to label.html
-    paperSize = "紙張大小: "+str(paperWidth)+"mm * "+str(paperHeight)+"mm"
-    density = "濃度: "+str(density)
-    return render(request,'label.html',{"paperName":paperName,"density":density,"paperSize":paperSize,"createdList":createdList})
+    paperSize = str(paperWidth)+"mm * "+str(paperHeight)+"mm"
+    density = str(density)
+
+    # Define language
+    if language == 'chinese':
+        return render(request,'label.html',{"paperName":paperName,"density":density,"paperSize":paperSize,"createdList":createdList})
+    elif language == 'english':
+        return render(request,'label_en.html',{"paperName":paperName,"density":density,"paperSize":paperSize,"createdList":createdList})
+    elif language == 'vietnamese':
+        return render(request,'label_vie.html',{"paperName":paperName,"density":density,"paperSize":paperSize,"createdList":createdList})
 # 統合執行指令
 def integratedExecutionCommand(paperName="test",copy=1):
     with open("./printLabel/commandTxt/"+paperName+".json","r",encoding='utf-8') as jsonFile:
@@ -483,6 +516,8 @@ def integratedExecutionCommand(paperName="test",copy=1):
             content = detailOfLabel["content"]
             # send text command
             tsclibrary.sendcommandW('TEXT '+str(X)+', '+str(Y)+',"'+str(size)+'", 0, 1, 1, "'+content+'"')
+            # Test chinese
+            tsclibrary.sendcommandW('TEXT '+str(X)+', '+str(Y+100)+',"FONT001", 0, 1, 1, "'+content+'"')
 
         elif detailOfLabel["type"] == "QRcode":
             X = detailOfLabel["X"]

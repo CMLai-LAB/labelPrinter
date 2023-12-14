@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Thiết lập nội dung văn bản</title>
+</head>
+<body>
+    <h1>Thiết lập văn bản</h1>
+    
+    <form action="/text/" method="post">
+        {% csrf_token %}
+        Tên
+        <input type="text" name="textName" required/><br><br>
+        Vị trí
+        <input type="text" name="textX" placeholder="X mm" required/><nbsp><nbsp>
+        <input type="text" name="textY" placeholder="Y mm" required/><br><br>
+        Nội dung
+        <input type="text" name="textContent" required/><br><br>
+        Kích thước
+        <input type="text" name="textSize" placeholder="0~8" required/><br><br>
+        <button type="submit">Thêm văn bản</button>
+    </form>
+</body>
+</html>

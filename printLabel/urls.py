@@ -19,4 +19,6 @@ urlpatterns = [
     path('deleteItem/',views.deleteItem,name='deleteItem'),
     path('detail/',views.detail,name='detail'),
     path('findLabel/',views.findLabel,name='findLabel'),
+    path('index_en/',views.index_en,name='index_en'),
+    path('index_vie/',views.index_vie,name='index_vie'),
 ]
