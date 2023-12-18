@@ -84,8 +84,14 @@ def integratedExecutionCommand(paperName="test",copy=1):
                     tsclibrary.sendcommandW('TEXT '+str(X+300)+', '+str(Y+160+25*l)+',"chinese", 0, 1, 1, "'+str(int(float(option[l])/weight*100))+'g"')
 
     tsclibrary.printlabelW("1",str(copy))     
-    
 
+def translate():
+    with open("./printLabel/translate.json","r",encoding='utf-8') as jsonFile:
+        labelMessage = json.load(jsonFile)
+    english = list(labelMessage.keys())
+    chinese = []
+    for lan in labelMessage.values():
+        chinese.append(lan[0])
+    print(chinese)
 if __name__ == "__main__":
-
-    integratedExecutionCommand()
+    translate()

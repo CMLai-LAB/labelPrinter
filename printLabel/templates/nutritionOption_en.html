@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Setting Nutrition Facts</title>
+</head>
+<body>
+    <h1>Nutrition Facts Options</h1>
+    <form action="/nutritionSettings/" method="post">
+        {% csrf_token %}
+        <h3>Main Options</h3>
+        <input type="checkbox" value="heat" name="option">Calories
+        <input type="checkbox" value="portain" name="option">Protein
+        <input type="checkbox" value="fat" name="option">Total fat
+        <input type="checkbox" value="saturated" name="option">Saturated fat <br><br>
+        <input type="checkbox" value="trans" name="option">Trans fat
+        <input type="checkbox" value="carbohydrate" name="option">Carbohydrate
+        <input type="checkbox" value="sugar" name="option">Sugar
+        <input type="checkbox" value="sodium" name="option">Sodium
+        <p>_____________________________________</p>
+        <h3>Voluntary Options</h3>
+        <input type="checkbox" value="cholesterol" name="option">Cholesterol
+        <input type="checkbox" value="amino" name="option">Amino
+        <input type="checkbox" value="vitamins" name="option">Vitamins
+        <input type="checkbox" value="minerals" name="option">Minerals <br><br>
+        <input type="checkbox" value="fiber" name="option">Dieatary Fiber
+        <input type="checkbox" value="potassium" name="option">Potassium
+        <input type="checkbox" value="calcium" name="option">Calcium
+        <input type="checkbox" value="iron" name="option">Iron <br><br>
+        <button type="submit">Confirm</button>
+    </form>
+</body>
+</html>

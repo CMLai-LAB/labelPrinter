@@ -52,6 +52,7 @@ def setup(request):
 """
 
 def nutritionFacts(request):
+    global language
     nutritionName = request.POST.get('nutritionName')
     X = float(request.POST.get('nutritionX')) *8
     Y = float(request.POST.get('nutritionY')) *8
@@ -115,6 +116,7 @@ def nutritionFacts(request):
                                         "density":density,"createdList":createdList})
 
 def qrCode(request):
+    global language
     qrName = request.POST.get('qrName')
     X = float(request.POST.get('qrX'))*8
     Y = float(request.POST.get('qrY'))*8
@@ -147,16 +149,22 @@ def qrCode(request):
     paperHeight = labelMessage['%s'%paperName]['paperHeight']
     density = labelMessage['%s'%paperName]['density']
 
-    paperSize = "紙張大小: "+str(paperWidth)+"mm * "+str(paperHeight)+"mm"
-    density = "濃度: "+str(density)
+    paperSize = str(paperWidth)+"mm * "+str(paperHeight)+"mm"
+    density = str(density)
     
     # 把標籤名稱跟累型合在一起
     createdList = dict(zip(createdList,typeList))
 
-    return render(request,'label.html',{"paperName":paperName,"paperSize":paperSize,"density":density,
-                                        "createdList":createdList})
-
+    # Define language
+    if language == 'chinese':
+        return render(request,'label.html',{"paperName":paperName,"paperSize":paperSize,"density":density,"createdList":createdList})
+    elif language == 'english':
+        return render(request,'label_en.html',{"paperName":paperName,"paperSize":paperSize,"density":density,"createdList":createdList})
+    elif language == 'vietnamese':
+        return render(request,'label_vie.html',{"paperName":paperName,"paperSize":paperSize,"density":density,"createdList":createdList})
+    
 def text(request):
+    global language
     textName = request.POST.get('textName')
     X = float(request.POST.get('textX'))*8
     Y = float(request.POST.get('textY'))*8
@@ -190,14 +198,17 @@ def text(request):
     paperHeight = labelMessage['%s'%paperName]['paperHeight']
     density = labelMessage['%s'%paperName]['density']
 
-    paperSize = "紙張大小: "+str(paperWidth)+"mm * "+str(paperHeight)+"mm"
-    density = "濃度: "+str(density)
+    paperSize = str(paperWidth)+"mm * "+str(paperHeight)+"mm"
+    density = str(density)
 
     # 把標籤名稱跟累型合在一起
     createdList = dict(zip(createdList,typeList))
-
-    return render(request,'label.html',{"paperName":paperName,"paperSize":paperSize,"density":density,
-                                        "createdList":createdList})
+    if language == 'chinese':
+        return render(request,'label.html',{"paperName":paperName,"paperSize":paperSize,"density":density,"createdList":createdList})
+    elif language == 'english':
+        return render(request,'label_en.html',{"paperName":paperName,"paperSize":paperSize,"density":density,"createdList":createdList})
+    elif language == 'vietnamese':
+        return render(request,'label_vie.html',{"paperName":paperName,"paperSize":paperSize,"density":density,"createdList":createdList})
 
 def printLabel(request):
     copy = request.POST.get('copy')
@@ -251,7 +262,13 @@ def textSettings(request):
         return render(request,'textSettings_vie.html',{"X":"X","Y":"Y"})
 
 def qrSettings(request):
-    return render(request,'qrSettings.html')
+    global language
+    if language == 'chinese':
+        return render(request,'qrSettings.html')
+    elif language == 'english':
+        return render(request,'qrSettings_en.html')
+    elif language == 'vietnamese':
+        return render(request,'qrSettings_vie.html')
 
 def printSettings(request):
     return render(request,'printSettings.html')
@@ -269,47 +286,41 @@ def restart(request):
 
 
 def nutritionOption(request):
-    return render(request,'nutritionOption.html')
+    global language
+    if language == 'chinese':
+        return render(request,'nutritionOption.html')
+    elif language == 'english':
+        return render(request,'nutritionOption_en.html')
+    elif language == 'vietnamese':
+        return render(request,'nutritionOption_vie.html')
 
 def nutritionSettings(request):
-
+    global language
     optionValues = request.POST.getlist('option')
     optionTitles = []
-    for i in range(0,len(optionValues)):
-        if optionValues[i] == 'heat':
-            optionTitles.append('熱量')
-        elif optionValues[i] == 'portain':
-            optionTitles.append('蛋白質')
-        elif optionValues[i] == 'fat':
-            optionTitles.append('脂肪')
-        elif optionValues[i] == 'saturated':
-            optionTitles.append('飽和脂肪')
-        elif optionValues[i] == 'trans':
-            optionTitles.append('反式脂肪')
-        elif optionValues[i] == 'carbohydrate':
-            optionTitles.append('碳水化合物')
-        elif optionValues[i] == 'sugar':
-            optionTitles.append('糖')
-        elif optionValues[i] == 'sodium':
-            optionTitles.append('鈉')
-        elif optionValues[i] == 'cholesterol':
-            optionTitles.append('膽固醇')
-        elif optionValues[i] == 'amino':
-            optionTitles.append('胺基酸')
-        elif optionValues[i] == 'vitamins':
-            optionTitles.append('維生素')
-        elif optionValues[i] == 'minerals':
-            optionTitles.append('礦物質')
-        elif optionValues[i] == 'fiber':
-            optionTitles.append('膳食纖維')
-        elif optionValues[i] == 'potassium':
-            optionTitles.append('鉀')
-        elif optionValues[i] == 'calcium':
-            optionTitles.append('鈣')
-        elif optionValues[i] == 'iron':
-            optionTitles.append('鐵')    
-    options = dict(zip(optionValues,optionTitles))
-    return render(request,'nutritionFacts.html',{"options":options})
+    with open("./printLabel/translate.json","r",encoding='utf-8') as jsonFile:
+        labelMessage = json.load(jsonFile)
+    key = list(labelMessage.keys())
+   
+    if language == 'chinese':
+        chinese = []
+        for lan in labelMessage.values():
+            chinese.append(lan[0])
+        for i in range(0,len(optionValues)):
+            if optionValues[i] in key:
+                optionTitles.append(chinese[i])
+        options = dict(zip(optionValues,optionTitles))
+        return render(request,'nutritionFacts.html',{"options":options})
+    elif language == 'english':
+        english = []
+        for lan in labelMessage.values():
+            english.append(lan[1])
+        for i in range(0,len(optionValues)):
+            if optionValues[i] in key:
+                optionTitles.append(english[i])
+                optionTitles.append(english[i])
+        options = dict(zip(optionValues,optionTitles))
+        return render(request,'nutritionFacts.html',{"options":options})
 
 def drawOnHtml(request):
     if request.method == 'GET':
@@ -325,6 +336,7 @@ def drawOnHtml(request):
     return JsonResponse(labelMessage)
 
 def deleteItem(request):
+    global language
     with open("./printLabel/commandTxt/"+str(paperName)+".json","r",encoding='utf-8') as jsonFile:
         labelMessage = json.load(jsonFile)
     itemName = request.POST.get('deleteItemButton')
@@ -361,10 +373,16 @@ def deleteItem(request):
     # 把標籤名稱跟累型合在一起
     createdList = dict(zip(createdList,typeList))
 
-    return render(request,'label.html',{"paperName":paperName,"paperSize":paperSize,"density":density,
-                                        "createdList":createdList})
+    # Define language
+    if language == 'chinese':
+        return render(request,'label.html',{"paperName":paperName,"paperSize":paperSize,"density":density,"createdList":createdList})
+    elif language == 'english':
+        return render(request,'label_en.html',{"paperName":paperName,"paperSize":paperSize,"density":density,"createdList":createdList})
+    elif language == 'vietnamese':
+        return render(request,'label_vie.html',{"paperName":paperName,"paperSize":paperSize,"density":density,"createdList":createdList})
 
 def detail(request):
+    global language
     itemName = request.POST.get('editButton')
 
     with open("./printLabel/commandTxt/"+str(paperName)+".json","r",encoding='utf-8') as jsonFile:
@@ -386,7 +404,13 @@ def detail(request):
         with open("./printLabel/commandTxt/"+str(paperName)+".json","w",encoding='utf-8') as jsonFile:
             json.dump(labelMessage,jsonFile)
         """"""
-        return render(request,'textDetail.html',{"itemName":itemName,"size":size,"content":content,"X":X,"Y":Y})
+        # Define language
+        if language == 'chinese':
+            return render(request,'textDetail.html',{"itemName":itemName,"size":size,"content":content,"X":X,"Y":Y})
+        elif language == 'english':
+            return render(request,'textDetail_en.html',{"itemName":itemName,"size":size,"content":content,"X":X,"Y":Y})
+        elif language == 'vietnamese':
+            return render(request,'textDetail_vie.html',{"itemName":itemName,"size":size,"content":content,"X":X,"Y":Y})
     
     elif itemType == "QRcode":
         X = labelMessage["%s"%paperName]["%s"%itemName]["X"] //8
@@ -404,7 +428,13 @@ def detail(request):
         with open("./printLabel/commandTxt/"+str(paperName)+".json","w",encoding='utf-8') as jsonFile:
             json.dump(labelMessage,jsonFile)
         """"""
-        return render(request,'qrDetail.html',{"itemName":itemName,"content":content,"X":X,"Y":Y,"ECC":ECC,"width":width,"rotation":rotation})
+        # Define language
+        if language == 'chinese':
+            return render(request,'qrDetail.html',{"itemName":itemName,"content":content,"X":X,"Y":Y,"ECC":ECC,"width":width,"rotation":rotation})
+        elif language == 'english':
+            return render(request,'qrDetail_en.html',{"itemName":itemName,"content":content,"X":X,"Y":Y,"ECC":ECC,"width":width,"rotation":rotation})
+        elif language == 'vietnamese':
+            return render(request,'qrDetail_vie.html',{"itemName":itemName,"content":content,"X":X,"Y":Y,"ECC":ECC,"width":width,"rotation":rotation})
     
     elif itemType == "營養標籤":
         option = list(labelMessage["%s"%paperName]["%s"%itemName].keys())[5:]
@@ -418,12 +448,16 @@ def detail(request):
         with open("./printLabel/translate.json","r",encoding='utf-8') as jsonFile:
             labelMessage = json.load(jsonFile)
         english = list(labelMessage.keys())
-        chinese = list(labelMessage.values())
+        chinese = []
+        for lan in labelMessage.values():
+            chinese.append(lan[0])
 
         for i in range(0,len(option)):
             for j in range(0,len(english)):
                 if option[i] == english[j]:
                     option[i] = chinese[j]
+        # translate option to english
+        # translate option to vietnamese
         option = dict(zip(option,optionValue))
 
         """Delete item first"""

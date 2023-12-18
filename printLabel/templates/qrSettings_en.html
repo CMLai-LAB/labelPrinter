@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Setting QRcode</title>
+</head>
+<body>
+    <h1>QRocde Settings</h1>
+    
+    <form action="/qrCode/" method="post">
+        {% csrf_token %}
+        Name <input type="text" name="qrName" required/><br><br>
+        Position <input type="text" name="qrX" placeholder="X mm" required/><nbsp>
+        <input type="text" name="qrY" placeholder="Y mm" required/><br><br>
+        ECC <input type="text" name="ECC" placeholder="L(低)、M、Q、H(高)" required/><br><br>
+        Size <input type="text" name="width" placeholder="寬度 1(細)~10(粗)" required/><br><br>
+        Rotation <input type="text" name="rotation" placeholder="旋轉:0、90、180、270" required/><br><br>
+        Content <input type="text" name="qrContent" placeholder="https://" required/><br><br>
+        <button type="submit">Add QRcode</button>
+    </form>
+</body>
+</html>

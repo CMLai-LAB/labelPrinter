@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Edit QRcode Settings</title>
+</head>
+<body>
+    <h1>QRcode Details</h1>
+    <form action="/qrCode/" method="post">
+        {% csrf_token %}
+        <h3>Name&#12288;<input type="text" name="qrName" placeholder="{{itemName}}" value="{{itemName}}" required><h3>
+        <h3 style="display: inline-block;">coordinate X&#12288;<input type="text" name="qrX" placeholder="{{X}}" value="{{X}}" required></h3> <p style="display: inline-block;">mm<p>
+        <h3 style="display: inline-block;">coordinate Y&#12288;<input type="text" name="qrY" placeholder="{{Y}}" value="{{Y}}" required></h3> <p style="display: inline-block;">mm<p>
+        <h3>ECC&#12288;<input type="text" placeholder="{{ECC}}(L、M、Q、H)" name="ECC" value="{{ECC}}" required><h3></h3>
+        <h3>Content&#12288;<input type="text" placeholder="{{content}}" name="qrContent" value="{{content}}" required><h3>
+        <h3>Size&#12288;<input type="text" placeholder="{{size}}(1~10)" name="width" value="{{width}}" required><h3>
+        <h3>Rotation&#12288;<input type="text" placeholder="{{rotation}}" name="rotation" value="{{rotation}}" required><h3>
+        <button type="submit">Finish</button>
+    </form>
+</body>
+</html>

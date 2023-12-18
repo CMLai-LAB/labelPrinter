@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Cài đặt mã QR</title>
+</head>
+<body>
+    <h1>Thiết lập mã QR</h1>
+    
+    <form action="/qrCode/" method="post">
+        {% csrf_token %}
+        Tên <input type="text" name="qrName" required/><br><br>
+        Vị trí <input type="text" name="qrX" placeholder="X mm" required/><nbsp>
+        <input type="text" name="qrY" placeholder="Y mm" required/><br><br>
+        tỷ lệ sửa lỗi <input type="text" name="ECC" placeholder="L(Thấp)、M、Q、H(Cao)" required/><br><br>
+        kích cỡ <input type="text" name="width" placeholder="1(Nhỏ)~10(Lớn)" required/><br><br>
+        quay <input type="text" name="rotation" placeholder="0、90、180、270" required/><br><br>
+        nội dung <input type="text" name="qrContent" placeholder="https://" required/><br><br>
+        <button type="submit">Thêm mã QR</button>
+    </form>
+</body>
+</html>
