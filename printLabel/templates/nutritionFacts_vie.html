@@ -1,21 +1,21 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Setting Nutrition Facts</title>
+    <title>Cài đặt Thông tin dinh dưỡng</title>
 </head>
 <body>
-    <h1>Nutrition Facts Settings</h1>
+    <h1>Cài đặt Thông tin dinh dưỡng</h1>
     
     <form action="/nutritionFacts/" method="post">
         {% csrf_token %}
-        Paper Name <input type="text" name="nutritionName" required/><br><br>
+        Tên giấy <input type="text" name="nutritionName" required/><br><br>
         
-        Position <input type="text" name="nutritionX" placeholder="X mm" required/><nbsp>
+        Vị trí <input type="text" name="nutritionX" placeholder="X mm" required/><nbsp>
         <input type="text" name="nutritionY" placeholder="Y mm" required/><br><br>
         
-        Serving Size <input type="text" name="weight" placeholder="weights(g)" required/><br><br>
+        Mỗi phần chứa <input type="text" name="weight" placeholder="trọng lượng(g)" required/><br><br>
         
-        Servings <input type="text" name="servings" placeholder="package" required/><br><br>
+        Gói này chứa <input type="text" name="servings" placeholder="phần" required/><br><br>
         <!--  heat, portain, fat, saturated, trans, carbohydrate, sugar, sodium -->
         {% for option ,value in options.items %} 
             {% if option == "sodium"%}

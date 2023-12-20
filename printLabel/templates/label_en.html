@@ -149,17 +149,17 @@
                         for (m in response[k]){
                             if (m != "type" && m != "X" && m != "Y" && m != "weight" && m != "servings"){
                                 console.log(response[k][m]);
-                                if (m == "heat"){
+                                if (m == "calories"){
                                     ctx.fillText(response[k][m]+"kcal",x+95,y+3+count*15);
                                     ctx.fillText(parseInt(response[k][m]/Number(weight)*100).toString()+"kcal",x+150,y+3+count*15);
                                     m = "Calories";
                                     ctx.fillText(m,x+3,y+3+count*15);
-                                }else if(m == "saturated" | m =="trans" | m == "sugar"){
+                                }else if(m == "saturated fat" | m =="trans fat" | m == "sugar"){
                                     ctx.fillText(response[k][m]+"g",x+95,y+3+count*15);
                                     ctx.fillText(parseInt(response[k][m]/Number(weight)*100).toString()+"g",x+150,y+3+count*15);
-                                    if (m == "saturated"){
+                                    if (m == "saturated fat"){
                                         m = "Saturated Fat";
-                                    }else if (m == "trans"){
+                                    }else if (m == "trans fat"){
                                         m = "Trans Fat";
                                     }else{
                                         m = "Sugars";
@@ -175,7 +175,7 @@
                                 }else{
                                     ctx.fillText(response[k][m]+"g",x+95,y+3+count*15);
                                     ctx.fillText(parseInt(response[k][m]/Number(weight)*100).toString()+"g",x+150,y+3+count*15);
-                                    if (m == "portain"){
+                                    if (m == "protein"){
                                         m = "Portein";
                                     }else if (m == "fat"){
                                         m = "Total Fat";
@@ -189,7 +189,7 @@
                                         m = "Vitamins";
                                     }else if (m == "minerals"){
                                         m = "Minerals";
-                                    }else if (m == "fiber"){
+                                    }else if (m == "dietary fiber"){
                                         m = "Dietary Fiber";
                                     }else if (m == "potassium"){
                                         m = "Potassium";

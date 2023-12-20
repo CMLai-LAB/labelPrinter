@@ -40,8 +40,8 @@ def setup(request):
         json.dump({"%s"%paperName:{"paperWidth":paperWidth,"paperHeight":paperHeight,"density":density}},labelMessage)
 
     # Send message to label.html
-    paperSize = "紙張大小: "+str(paperWidth)+"mm * "+str(paperHeight)+"mm"
-    density = "濃度: "+str(density)
+    paperSize = str(paperWidth)+"mm * "+str(paperHeight)+"mm"
+    density = str(density)
 
     return render(request,'label.html',{"paperName":paperName,"density":density,"paperSize":paperSize})
 
@@ -62,18 +62,6 @@ def nutritionFacts(request):
     optionList = request.POST.get('optionList')
     optionList = list(eval(optionList).keys())
 
-    ### translate option to english ###
-    with open("./printLabel/translate.json","r",encoding='utf-8') as jsonFile:
-        labelMessage = json.load(jsonFile)
-    english = list(labelMessage.keys())
-    chinese = list(labelMessage.values())
-
-    for i in range(0,len(option)):
-        for j in range(0,len(english)):
-            if optionList[i] == chinese[j]:
-                optionList[i] = english[j]
-    ############################
-                   
     with open("./printLabel/commandTxt/"+str(paperName)+".json","r") as jsonFile:
             labelMessage = json.load(jsonFile)
 
@@ -83,7 +71,19 @@ def nutritionFacts(request):
         "Y":Y,
         "weight":weight,
         "servings":servings}
-
+    # 看optionList的值有沒有在translatex裡面，一律翻譯成translate.json裡面的keys
+    with open("./printLabel/translate.json","r",encoding='utf-8') as jsonFile:
+        translate = json.load(jsonFile)
+    language_dict = list(translate.values())
+    for n in range(0,len(language_dict[0])):
+        chinese = []
+        for lan in translate.values():
+            chinese.append(lan[n])
+        for i in range(0,len(optionList)):
+            for j in range(0,len(chinese)):
+                if optionList[i] == chinese[j]:
+                    optionList[i] = list(translate.keys())[j]
+    print(optionList)
     # 把營養標籤的內容存到json檔
     for i in range(0,len(option)):
         labelMessage["%s"%paperName]["%s"%nutritionName].update({"%s"%optionList[i]:option[i]})
@@ -106,14 +106,18 @@ def nutritionFacts(request):
     paperHeight = labelMessage['%s'%paperName]['paperHeight']
     density = labelMessage['%s'%paperName]['density']
 
-    paperSize = "紙張大小: "+str(paperWidth)+"mm * "+str(paperHeight)+"mm"
-    density = "濃度: "+str(density)
+    paperSize = str(paperWidth)+"mm * "+str(paperHeight)+"mm"
+    density = str(density)
 
     # 把標籤名稱跟累型合在一起
     createdList = dict(zip(createdList,typeList))
-
-    return render(request,'label.html',{"paperName":paperName,"paperSize":paperSize,
-                                        "density":density,"createdList":createdList})
+    # Define language
+    if language == 'chinese':
+        return render(request,'label.html',{"paperName":paperName,"paperSize":paperSize,"density":density,"createdList":createdList})
+    elif language == 'english':
+        return render(request,'label_en.html',{"paperName":paperName,"paperSize":paperSize,"density":density,"createdList":createdList})
+    elif language == 'vietnamese':
+        return render(request,'label_vie.html',{"paperName":paperName,"paperSize":paperSize,"density":density,"createdList":createdList})
 
 def qrCode(request):
     global language
@@ -318,13 +322,20 @@ def nutritionSettings(request):
         for i in range(0,len(optionValues)):
             if optionValues[i] in key:
                 optionTitles.append(english[i])
-                optionTitles.append(english[i])
         options = dict(zip(optionValues,optionTitles))
-        return render(request,'nutritionFacts.html',{"options":options})
-
+        return render(request,'nutritionFacts_en.html',{"options":options})
+    elif language == 'vietnamese':
+        vietnamese = []
+        for lan in labelMessage.values():
+            vietnamese.append(lan[2])
+        for i in range(0,len(optionValues)):
+            if optionValues[i] in key:
+                optionTitles.append(vietnamese[i])
+        options = dict(zip(optionValues,optionTitles))
+        return render(request,'nutritionFacts_vie.html',{"options":options})
+    
 def drawOnHtml(request):
     if request.method == 'GET':
-        
         # 讀取已建立的內容
         with open("./printLabel/commandTxt/"+str(paperName)+".json","r",encoding='utf-8') as jsonFile:
             labelMessage = json.load(jsonFile)
@@ -367,8 +378,8 @@ def deleteItem(request):
     paperHeight = labelMessage['%s'%paperName]['paperHeight']
     density = labelMessage['%s'%paperName]['density']
 
-    paperSize = "紙張大小: "+str(paperWidth)+"mm * "+str(paperHeight)+"mm"
-    density = "濃度: "+str(density)
+    paperSize = str(paperWidth)+"mm * "+str(paperHeight)+"mm"
+    density = str(density)
 
     # 把標籤名稱跟累型合在一起
     createdList = dict(zip(createdList,typeList))
@@ -430,6 +441,7 @@ def detail(request):
         """"""
         # Define language
         if language == 'chinese':
+
             return render(request,'qrDetail.html',{"itemName":itemName,"content":content,"X":X,"Y":Y,"ECC":ECC,"width":width,"rotation":rotation})
         elif language == 'english':
             return render(request,'qrDetail_en.html',{"itemName":itemName,"content":content,"X":X,"Y":Y,"ECC":ECC,"width":width,"rotation":rotation})
@@ -444,31 +456,41 @@ def detail(request):
         weight = labelMessage["%s"%paperName]["%s"%itemName]["weight"]
         servings = labelMessage["%s"%paperName]["%s"%itemName]["servings"]
 
-        # translate option to chinese
-        with open("./printLabel/translate.json","r",encoding='utf-8') as jsonFile:
-            labelMessage = json.load(jsonFile)
-        english = list(labelMessage.keys())
-        chinese = []
-        for lan in labelMessage.values():
-            chinese.append(lan[0])
-
-        for i in range(0,len(option)):
-            for j in range(0,len(english)):
-                if option[i] == english[j]:
-                    option[i] = chinese[j]
-        # translate option to english
-        # translate option to vietnamese
-        option = dict(zip(option,optionValue))
-
         """Delete item first"""
         with open("./printLabel/commandTxt/"+str(paperName)+".json","r",encoding='utf-8') as jsonFile:
             labelMessage = json.load(jsonFile)
+    
         del labelMessage["%s"%paperName]["%s"%itemName]
-
-        with open("./printLabel/commandTxt/"+str(paperName)+".json","w",encoding='utf-8') as jsonFile:
-            json.dump(labelMessage,jsonFile)
+        
         """"""
-        return render(request,'nutritionDetail.html',{"itemName":itemName,"option":option,"X":X,"Y":Y,"weight":weight,"servings":servings})
+        with open("./printLabel/translate.json","r",encoding='utf-8') as jsonFile:
+            labelMessage = json.load(jsonFile)
+        key = list(labelMessage.keys())
+          
+        # Define language
+        if language == 'chinese':
+            # translate option to chinese       
+            for i in range(0,len(option)):
+                if option[i] in key:
+                    option[i] = labelMessage["%s"%option[i]][0]
+            option = dict(zip(option,optionValue))
+
+            return render(request,'nutritionDetail.html',{"itemName":itemName,"option":option,"X":X,"Y":Y,"weight":weight,"servings":servings})
+        elif language == 'english':
+            for i in range(0,len(option)):
+                if option[i] in key:
+                    option[i] = labelMessage["%s"%option[i]][1]
+            option = dict(zip(option,optionValue))
+        
+            return render(request,'nutritionDetail_en.html',{"itemName":itemName,"option":option,"X":X,"Y":Y,"weight":weight,"servings":servings})
+        ### Nutrition Detail multi-language page ###
+        elif language == 'vietnamese':
+            for i in range(0,len(option)):
+                if option[i] in key:
+                    option[i] = labelMessage["%s"%option[i]][2]
+            option = dict(zip(option,optionValue))
+
+            return render(request,'nutritionDetail_vie.html',{"itemName":itemName,"option":option,"X":X,"Y":Y,"weight":weight,"servings":servings})
     
 def findLabel(request):
     global paperName

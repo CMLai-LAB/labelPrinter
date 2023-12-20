@@ -20,7 +20,7 @@
         {% for option ,value in options.items %} 
             {% if option == "sodium"%}
                 鈉 <nbsp><input type="text" name="options" placeholder="毫克" required><br><br>
-            {% elif option == "heat" %}
+            {% elif option == "calrories" %}
                 {{value}} <input type="text" name="options" placeholder="大卡" required><br><br>
             {% else %}
                 {{value}} <input type="text" name="options" placeholder="公克" required><br><br>

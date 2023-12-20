@@ -141,17 +141,17 @@
                         for (m in response[k]){
                             if (m != "type" && m != "X" && m != "Y" && m != "weight" && m != "servings"){
                                 console.log(response[k][m]);
-                                if (m == "heat"){
+                                if (m == "calories"){
                                     ctx.fillText(response[k][m]+"大卡",x+95,y+3+count*15);
                                     ctx.fillText(parseInt(response[k][m]/Number(weight)*100).toString()+"大卡",x+150,y+3+count*15);
                                     m = "熱量";
                                     ctx.fillText(m,x+3,y+3+count*15);
-                                }else if(m == "saturated" | m =="trans" | m == "sugar"){
+                                }else if(m == "saturated fat" | m =="trans fat" | m == "sugar"){
                                     ctx.fillText(response[k][m]+"公克",x+95,y+3+count*15);
                                     ctx.fillText(parseInt(response[k][m]/Number(weight)*100).toString()+"公克",x+150,y+3+count*15);
-                                    if (m == "saturated"){
+                                    if (m == "saturated fat"){
                                         m = "飽和脂肪";
-                                    }else if (m == "trans"){
+                                    }else if (m == "trans fat"){
                                         m = "反式脂肪";
                                     }else{
                                         m = "糖";
@@ -167,7 +167,7 @@
                                 }else{
                                     ctx.fillText(response[k][m]+"公克",x+95,y+3+count*15);
                                     ctx.fillText(parseInt(response[k][m]/Number(weight)*100).toString()+"公克",x+150,y+3+count*15);
-                                    if (m == "portain"){
+                                    if (m == "protein"){
                                         m = "蛋白質";
                                     }else if (m == "fat"){
                                         m = "脂肪";
@@ -181,7 +181,7 @@
                                         m = "維生素";
                                     }else if (m == "minerals"){
                                         m = "礦物質";
-                                    }else if (m == "fiber"){
+                                    }else if (m == "dietary fiber"){
                                         m = "膳食纖維";
                                     }else if (m == "potassium"){
                                         m = "鉀";

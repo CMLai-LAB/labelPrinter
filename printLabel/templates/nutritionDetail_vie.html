@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Edit Nutrition Facts</title>
+</head>
+<body>
+    <h1>Nutrition Facts Details</h1>
+    <form action="/nutritionFacts/" method="post">
+        {% csrf_token %}
+        <h3>Tên giấy&#12288;<input type="text" name="nutritionName" placeholder="{{itemName}}" value="{{itemName}}" required></h3>
+        <h3 style="display: inline-block;">Tọa độ X&#12288;<input type="text" name="nutritionX" placeholder="{{X}}" value="{{X}}" required></h3> <p style="display: inline-block;">mm</p><br>
+        <h3 style="display: inline-block;">Tọa độ Y&#12288;<input type="text" name="nutritionY" placeholder="{{Y}}" value="{{Y}}" required></h3> <p style="display: inline-block;">mm</p><br>
+        <h3 style="display: inline-block;">Mỗi phần chứ <input type="text" name="weight" placeholder="{{weight}}" value="{{weight}}" required></h3> <p style="display: inline-block;">g</p><br>
+        <h3 style="display: inline-block;">phần <input type="text" name="servings" placeholder="{{servings}}" value="{{servings}}" required></h3> <p style="display: inline-block;">gói hàng</p><br>
+        {% for options ,value in option.items %} 
+            {% if options == "sodium"%}
+                <h3 style="display: inline-block;">Natri <input type="text" name="options" placeholder={{value}} value="{{value}}" required></h3> <p style="display: inline-block;">mg</p><br>
+            {% elif options == "calories" %}
+                <h3 style="display: inline-block;">Năng lượng <input type="text" name="options" placeholder="{{value}}" value="{{value}}" required></h3> <p style="display: inline-block;">k</p><br>
+            {% else %}
+                <h3 style="display: inline-block;">{{options}} <input type="text" name="options" placeholder="{{value}}" value="{{value}}" required></h3> <p style="display: inline-block;">g</p><br>
+            {% endif %}
+        {% endfor %}
+        <button type="submit" value="{{option}}" name="optionList">Hoàn thành</button>
+    </form>
+</body>
+</html>
