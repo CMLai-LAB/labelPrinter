@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Print Label</title>
+</head>
+<body>
+    <h1>Cài đặt in</h1>
+
+    <form action="/printLabel/" method="post">
+        {% csrf_token %}
+        <input type="text" name="copy" placeholder="Số bản in" required/>
+        <br><br>
+        <button type="submit" name="setup">Xác nhận</button>
+    </form>
+</body>
+</html>

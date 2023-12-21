@@ -9,7 +9,7 @@
     <form action="/printLabel/" method="post">
         {% csrf_token %}
         <input type="text" name="copy" placeholder="列印份數" required/>
-        <br>
+        <br><br>
         <button type="submit" name="setup">確認列印</button>
     </form>
 </body>

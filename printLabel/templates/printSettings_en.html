@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Print Label</title>
+</head>
+<body>
+    <h1>Print</h1>
+
+    <form action="/printLabel/" method="post">
+        {% csrf_token %}
+        <input type="text" name="copy" placeholder="copy" required/>
+        <br><br>
+        <button type="submit" name="setup">Confirm</button>
+    </form>
+</body>
+</html>

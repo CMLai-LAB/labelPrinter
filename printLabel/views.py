@@ -42,8 +42,12 @@ def setup(request):
     # Send message to label.html
     paperSize = str(paperWidth)+"mm * "+str(paperHeight)+"mm"
     density = str(density)
-
-    return render(request,'label.html',{"paperName":paperName,"density":density,"paperSize":paperSize})
+    if language == 'chinese':
+        return render(request,'label.html',{"paperName":paperName,"density":density,"paperSize":paperSize})
+    elif language == 'english':
+        return render(request,'label_en.html',{"paperName":paperName,"density":density,"paperSize":paperSize})
+    elif language == 'vietnamese':
+        return render(request,'label_vie.html',{"paperName":paperName,"density":density,"paperSize":paperSize})
 
 """setup 列印設定
 - paperWidth : 紙張寬度
@@ -215,9 +219,15 @@ def text(request):
         return render(request,'label_vie.html',{"paperName":paperName,"paperSize":paperSize,"density":density,"createdList":createdList})
 
 def printLabel(request):
+    global language
     copy = request.POST.get('copy')
     integratedExecutionCommand(paperName,int(copy))
-    return render(request,'finishPrint.html')
+    if language == 'chinese':
+        return render(request,'finishPrint.html')
+    elif language == 'english':
+        return render(request,'finishPrint_en.html')
+    elif language == 'vietnamese':
+        return render(request,'finishPrint_vie.html')
 
 def index_en(request):
     global language
@@ -275,9 +285,16 @@ def qrSettings(request):
         return render(request,'qrSettings_vie.html')
 
 def printSettings(request):
-    return render(request,'printSettings.html')
-
+    global language
+    if language == 'chinese':
+        return render(request,'printSettings.html')
+    elif language == 'english':
+        return render(request,'printSettings_en.html')
+    elif language == 'vietnamese':
+        return render(request,'printSettings_vie.html')
+    
 def restart(request):
+    global language
     # restart printerf
     tsclibrary.sendcommandW(chr(27) + '!R')
     tsclibrary.closeport()
@@ -286,7 +303,12 @@ def restart(request):
     for i in range(0,len(papers)):
         if 'json' in papers[i]:
             papers[i] = papers[i].replace('.json','')
-    return render(request,'index.html',{"papers":papers})
+    if language == 'chinese':
+        return render(request,'index.html',{"papers":papers})
+    elif language == 'english':
+        return render(request,'index_en.html',{"papers":papers})
+    elif language == 'vietnamese':
+        return render(request,'index_vie.html',{"papers":papers})
 
 
 def nutritionOption(request):
