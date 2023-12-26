@@ -6,7 +6,7 @@
 <body>
     <h1>Cài đặt in</h1>
 
-    <form action="/printLabel/" method="post">
+    <form action="/startPrint/" method="post">
         {% csrf_token %}
         <input type="text" name="copy" placeholder="Số bản in" required/>
         <br><br>

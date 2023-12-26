@@ -150,8 +150,8 @@
                             if (m != "type" && m != "X" && m != "Y" && m != "weight" && m != "servings"){
                                 console.log(response[k][m]);
                                 if (m == "calories"){
-                                    ctx.fillText(response[k][m]+"kcal",x+95,y+3+count*15);
-                                    ctx.fillText(parseInt(response[k][m]/Number(weight)*100).toString()+"kcal",x+150,y+3+count*15);
+                                    ctx.fillText(response[k][m]+"k",x+95,y+3+count*15);
+                                    ctx.fillText(parseInt(response[k][m]/Number(weight)*100).toString()+"k",x+150,y+3+count*15);
                                     m = "Calories";
                                     ctx.fillText(m,x+3,y+3+count*15);
                                 }else if(m == "saturated fat" | m =="trans fat" | m == "sugar"){

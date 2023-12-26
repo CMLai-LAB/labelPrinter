@@ -6,7 +6,7 @@
 <body>
     <h1>列印</h1>
 
-    <form action="/printLabel/" method="post">
+    <form action="/startPrint/" method="post">
         {% csrf_token %}
         <input type="text" name="copy" placeholder="列印份數" required/>
         <br><br>

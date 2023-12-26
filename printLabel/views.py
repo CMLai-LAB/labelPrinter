@@ -218,7 +218,7 @@ def text(request):
     elif language == 'vietnamese':
         return render(request,'label_vie.html',{"paperName":paperName,"paperSize":paperSize,"density":density,"createdList":createdList})
 
-def printLabel(request):
+def startPrint(request):
     global language
     copy = request.POST.get('copy')
     integratedExecutionCommand(paperName,int(copy))
@@ -295,6 +295,7 @@ def printSettings(request):
     
 def restart(request):
     global language
+    language = request.POST.get('language')
     # restart printerf
     tsclibrary.sendcommandW(chr(27) + '!R')
     tsclibrary.closeport()
@@ -579,6 +580,7 @@ def findLabel(request):
         return render(request,'label_vie.html',{"paperName":paperName,"density":density,"paperSize":paperSize,"createdList":createdList})
 # 統合執行指令
 def integratedExecutionCommand(paperName="test",copy=1):
+    global language
     with open("./printLabel/commandTxt/"+paperName+".json","r",encoding='utf-8') as jsonFile:
         labelMessage = json.load(jsonFile)
 
@@ -592,10 +594,20 @@ def integratedExecutionCommand(paperName="test",copy=1):
             Y = detailOfLabel["Y"]
             size = detailOfLabel["size"]
             content = detailOfLabel["content"]
-            # send text command
-            tsclibrary.sendcommandW('TEXT '+str(X)+', '+str(Y)+',"'+str(size)+'", 0, 1, 1, "'+content+'"')
-            # Test chinese
-            tsclibrary.sendcommandW('TEXT '+str(X)+', '+str(Y+100)+',"FONT001", 0, 1, 1, "'+content+'"')
+            if language == 'english':
+                # send text command
+                tsclibrary.sendcommandW('TEXT '+str(X)+', '+str(Y)+',"'+str(size)+'", 0, 1, 1, "'+content+'"')
+            elif language == 'chinese':
+                printCommand = 'TEXT '+str(X)+', '+str(Y)+',"FONT001", 0, '+str(size)+', '+str(size)+', "'+content+'"'
+                print('printCommand : ',printCommand)
+                bytes_code = bytes(printCommand, 'big5')
+                tsclibrary.sendcommand(bytes_code)
+            elif language == 'vietnamese':
+                # printCommand = 'TEXT '+str(X)+', '+str(Y)+',"FONT001", 0, '+str(size)+', '+str(size)+', "'+content+'"'
+                # print('printCommand : ',printCommand)
+                # bytes_code = bytes(printCommand, 'utf-8')
+                # tsclibrary.sendcommand(bytes_code)
+                pass
 
         elif detailOfLabel["type"] == "QRcode":
             X = detailOfLabel["X"]
@@ -615,27 +627,65 @@ def integratedExecutionCommand(paperName="test",copy=1):
             optionList = list(detailOfLabel.keys())[5:]
             option = list(detailOfLabel.values())[5:]
             length = len(option)
-
-            # BOX
-            tsclibrary.sendcommandW('TEXT '+str(X+80)+','+str(Y+20)+',"FONT001",0,1,1,"Nutrition Facts"')
+            if language == 'english':
+                # BOX
+                tsclibrary.sendcommandW('TEXT '+str(X+80)+','+str(Y+20)+',"FONT001",0,1,1,"Nutrition Facts"')
+            elif language == 'chinese':
+                # BOX
+                printCommand = 'TEXT '+str(X+80)+','+str(Y+20)+',"FONT001",0,1,1,"營養標示"'
+                bytes_code = bytes(printCommand, 'big5')
+                tsclibrary.sendcommand(bytes_code)
+            elif language == 'vietnamese':
+                pass
             tsclibrary.sendcommandW('BOX '+str(X)+', '+str(Y)+', '+str(X+400)+', '+str(Y+50)+', 1')
             tsclibrary.sendcommandW('BOX '+str(X)+', '+str(Y+50)+', '+str(X+400)+', '+str(Y+110)+', 1')
             tsclibrary.sendcommandW('BOX '+str(X)+', '+str(Y+110)+', '+str(X+400)+', '+str(Y+150)+', 1')
             tsclibrary.sendcommandW('BOX '+str(X)+', '+str(Y+150)+', '+str(X+400)+', '+str(Y+160+25*length)+', 1')
 
             # serving size
-            tsclibrary.sendcommandW('TEXT '+str(X+10)+', '+str(Y+60)+',"FONT001", 0, 1, 1, "Each contains '+str(weight)+' grams"')
-            tsclibrary.sendcommandW('TEXT '+str(X+10)+', '+str(Y+85)+',"FONT001", 0, 1, 1, "This contains '+str(servings)+' package"')
-            tsclibrary.sendcommandW('TEXT '+str(X+200)+', '+str(Y+120)+',"FONT001", 0, 1, 1, "1 pack"')
-            tsclibrary.sendcommandW('TEXT '+str(X+300)+', '+str(Y+120)+',"FONT001", 0, 1, 1, "100 g"')
+            if language == 'english':
+                tsclibrary.sendcommandW('TEXT '+str(X+10)+', '+str(Y+60)+',"FONT001", 0, 1, 1, "Servings size    ('+str(weight)+'g)"')
+                tsclibrary.sendcommandW('TEXT '+str(X+10)+', '+str(Y+85)+',"FONT001", 0, 1, 1, "'+str(servings)+' servings per container"')
+                print('TEXT '+str(X+10)+', '+str(Y+85)+',"FONT001", 0, 1, 1, "'+str(servings)+' servings per container"')
+                tsclibrary.sendcommandW('TEXT '+str(X+150)+', '+str(Y+120)+',"FONT001", 0, 1, 1, "Per Serving"')
+                tsclibrary.sendcommandW('TEXT '+str(X+270)+', '+str(Y+120)+',"FONT001", 0, 1, 1, "Per 100g"')
+            elif language == 'chinese':
+                eachCommand = 'TEXT '+str(X+10)+', '+str(Y+60)+',"FONT001", 0, 1, 1, "每一份量 '+str(weight)+'公克"'
+                thisCommand = 'TEXT '+str(X+10)+', '+str(Y+85)+',"FONT001", 0, 1, 1, "本包裝含 '+str(servings)+'份"'
+                packCommand = 'TEXT '+str(X+200)+', '+str(Y+120)+',"FONT001", 0, 1, 1, "每份"'
+                gCommand = 'TEXT '+str(X+300)+', '+str(Y+120)+',"FONT001", 0, 1, 1, "每100公克"'
+                eachBytes = bytes(eachCommand, 'big5')
+                thisBytes = bytes(thisCommand, 'big5')
+                packBytes = bytes(packCommand, 'big5')
+                gBytes = bytes(gCommand, 'big5')
+                tsclibrary.sendcommand(eachBytes)
+                tsclibrary.sendcommand(thisBytes)
+                tsclibrary.sendcommand(packBytes)
+                tsclibrary.sendcommand(gBytes)
+            elif language == 'vietnamese':
+                pass
 
             # option
+            """列印語言轉換"""
+            with open("./printLabel/translate.json","r",encoding='utf-8') as jsonFile:
+                labelMessage = json.load(jsonFile)
+            key = list(labelMessage.keys())
+            optionList_in_language = []
+            for l in range(0,len(optionList)):
+                if optionList[l] in key:
+                    if language == 'english':
+                        optionList_in_language.append(labelMessage["%s"%optionList[l]][1])
+                    elif language == 'chinese':
+                        optionList_in_language.append(labelMessage["%s"%optionList[l]][0])
+                    elif language == 'vietnamese':
+                        optionList_in_language.append(labelMessage["%s"%optionList[l]][2])
+            print('optionList : ',optionList_in_language)
             for l in range(0,len(option)):
-                if optionList[l] == 'heat':
+                if optionList[l] == 'calories':
                     tsclibrary.sendcommandW('TEXT '+str(X+10)+', '+str(Y+160+25*l)+',"FONT001", 0, 1, 1, "'+optionList[l]+'"')
                     tsclibrary.sendcommandW('TEXT '+str(X+200)+', '+str(Y+160+25*l)+',"FONT001", 0, 1, 1, "'+option[l]+'k"')
                     tsclibrary.sendcommandW('TEXT '+str(X+300)+', '+str(Y+160+25*l)+',"FONT001", 0, 1, 1, "'+str(int(float(option[l])/weight*100))+'k"')
-                elif optionList[l] == 'saturated'or optionList[l] == 'trans' or optionList[l] == 'sugar':
+                elif optionList[l] == 'saturated fat'or optionList[l] == 'trans fat' or optionList[l] == 'sugar':
                     tsclibrary.sendcommandW('TEXT '+str(X+15)+', '+str(Y+160+25*l)+',"FONT001", 0, 1, 1, "'+optionList[l]+'"')
                     tsclibrary.sendcommandW('TEXT '+str(X+200)+', '+str(Y+160+25*l)+',"FONT001", 0, 1, 1, "'+option[l]+'g"')
                     tsclibrary.sendcommandW('TEXT '+str(X+300)+', '+str(Y+160+25*l)+',"FONT001", 0, 1, 1, "'+str(int(float(option[l])/weight*100))+'g"')

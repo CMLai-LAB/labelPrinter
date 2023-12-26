@@ -5,7 +5,9 @@
 </head>
 <body>
     <h1>Finish Print</h1>
-    <a href="/restart">
-        <button>Back to home page</button>
-    </a>
+    
+    <form action="/restart/" method="post">
+        {% csrf_token %}
+        <button name="language" value="english">Back to home page</button>
+    </form>
 </html>

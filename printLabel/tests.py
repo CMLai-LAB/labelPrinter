@@ -93,5 +93,30 @@ def translate():
     for lan in labelMessage.values():
         chinese.append(lan[0])
     print(chinese)
+
+def testPrintChinese():
+    tsclibrary = ctypes.WinDLL("./printLabel/TSCLIB.dll")
+    tsclibrary.openportW("USB")
+    tsclibrary.sendcommandW("DENSITY 15")
+    tsclibrary.sendcommandW("SIZE 100mm, 85mm")
+    tsclibrary.clearbuffer()
+    tsclibrary.sendcommandW("CLS")
+
+    """ 中文Big5編碼 """
+    printString = 'TEXT 100,300,"FONT001",0,2,2,"中文測試"'
+    bytes_code = bytes(printString, 'big5')
+    tsclibrary.sendcommand(bytes_code)
+    print("中文bytes_code : ",bytes_code)
+
+    """ 英文Big5編碼 """
+    enString = 'TEXT 100,400,"4",0,1,1,"Cài đặt in"'
+    # bytes_code = enString.encode('big5')
+    tsclibrary.sendcommandW('TEXT 100,200,"4",0,1,1,"Cài đặt in"')
+    print("英文bytes_code : ",enString)
+
+    """ 開始印 """
+    tsclibrary.printlabelW("1","1")
+    tsclibrary.closeport()
+
 if __name__ == "__main__":
-    translate()
+    testPrintChinese()
