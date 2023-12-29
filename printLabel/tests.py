@@ -101,18 +101,28 @@ def testPrintChinese():
     tsclibrary.sendcommandW("SIZE 100mm, 85mm")
     tsclibrary.clearbuffer()
     tsclibrary.sendcommandW("CLS")
-
-    """ 中文Big5編碼 """
-    printString = 'TEXT 100,300,"FONT001",0,2,2,"中文測試"'
-    bytes_code = bytes(printString, 'big5')
+    """ 簡體中文 """
+    printString = 'TEXT 500,250,"FONT002",0,1,1,"营养标签"'
+    bytes_code = printString.encode('gbk')
     tsclibrary.sendcommand(bytes_code)
-    print("中文bytes_code : ",bytes_code)
+     
+    """ 越南文 """
+    printString = 'TEXT 500,350,"NotoSans.TTF",0,7,7,"Cài đặt in"'
+    bytes_code = bytes(printString, 'utf-8')
+    tsclibrary.sendcommand(bytes_code)
 
-    """ 英文Big5編碼 """
-    enString = 'TEXT 100,400,"4",0,1,1,"Cài đặt in"'
-    # bytes_code = enString.encode('big5')
-    tsclibrary.sendcommandW('TEXT 100,200,"4",0,1,1,"Cài đặt in"')
-    print("英文bytes_code : ",enString)
+    """ 英文 """
+    """ 中文編碼 """
+    # printString = 'TEXT 100,500,"FONT001",0,1,1,"鯛魚燒"'
+    # bytes_code = bytes(printString, 'big5')
+    # tsclibrary.sendcommand(bytes_code)
+    # print("中文bytes_code : ",bytes_code)
+
+    # """ 英文Big5編碼 """
+    # enString = 'TEXT 100,400,"4",0,1,1,"Cài đặt in"'
+    # # bytes_code = enString.encode('big5')
+    # tsclibrary.sendcommandW('TEXT 100,200,"4",0,1,1,"Cài đặt in"')
+    # print("英文bytes_code : ",enString)
 
     """ 開始印 """
     tsclibrary.printlabelW("1","1")

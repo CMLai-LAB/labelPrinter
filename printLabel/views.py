@@ -19,7 +19,12 @@ def setup(request):
     paperHeight = request.POST.get('paperHeight')
     density = request.POST.get('density')
     paperName = request.POST.get('paperName')
-
+    try:
+        paperWidth = float(paperWidth)
+        paperHeight = float(paperHeight)
+        density = int(float(density))
+    except:
+        return HttpResponse("請依照提示輸入正確的型態")
     # Connect to printer and .dll
     try:
         # Connect to printer and .dll
@@ -42,12 +47,14 @@ def setup(request):
     # Send message to label.html
     paperSize = str(paperWidth)+"mm * "+str(paperHeight)+"mm"
     density = str(density)
+    paperWidth = int(paperWidth)*4
+    paperHeight = int(paperHeight)*4
     if language == 'chinese':
-        return render(request,'label.html',{"paperName":paperName,"density":density,"paperSize":paperSize})
+        return render(request,'label.html',{"paperName":paperName,"density":density,"paperSize":paperSize,"paperWidth":paperWidth,"paperHeight":paperHeight})
     elif language == 'english':
-        return render(request,'label_en.html',{"paperName":paperName,"density":density,"paperSize":paperSize})
+        return render(request,'label_en.html',{"paperName":paperName,"density":density,"paperSize":paperSize,"paperWidth":paperWidth,"paperHeight":paperHeight})
     elif language == 'vietnamese':
-        return render(request,'label_vie.html',{"paperName":paperName,"density":density,"paperSize":paperSize})
+        return render(request,'label_vie.html',{"paperName":paperName,"density":density,"paperSize":paperSize,"paperWidth":paperWidth,"paperHeight":paperHeight})
 
 """setup 列印設定
 - paperWidth : 紙張寬度
@@ -531,13 +538,21 @@ def findLabel(request):
         return render(request,'index.html',{"warning":"沒有連接標籤機"})
     
     paperName = request.POST.get('paperName')
+   
+    if paperName is None:
+        if language is None or language == 'chinese':
+            return render(request,'index.html')
+        elif language == 'english':
+            return render(request,'index_en.html')
+        elif language == 'vietnamese':
+            return render(request,'index_vie.html')
     # 刪除
     if "delete" in paperName:
         paperName = paperName.replace("delete","") + ".json"
       
         # 取得commandTxt資料夾的檔案清單
         papers = os.listdir("./printLabel/commandTxt")
-
+    
         for i in range(0,len(papers)):
             if paperName == papers[i]:
                 os.remove(os.path.join("./printLabel/commandTxt", paperName))
@@ -545,10 +560,18 @@ def findLabel(request):
 
         # 回傳index.html
         papers = os.listdir("./printLabel/commandTxt")
+        if len(papers) == 0:
+            return render(request,'index.html')
         for i in range(0,len(papers)):
             if 'json' in papers[i]:
                 papers[i] = papers[i].replace('.json','')
-            return render(request,'index.html',{"papers":papers})
+            # Define language
+            if language == 'chinese':
+                return render(request,'index.html',{"papers":papers})
+            elif language == 'english':
+                return render(request,'index_en.html',{"papers":papers})
+            elif language == 'vietnamese':
+                return render(request,'index_vie.html',{"papers":papers})
         
     # 回傳label.html
     with open("./printLabel/commandTxt/"+str(paperName)+".json","r") as jsonFile:
@@ -570,14 +593,15 @@ def findLabel(request):
     # Send message to label.html
     paperSize = str(paperWidth)+"mm * "+str(paperHeight)+"mm"
     density = str(density)
-
+    paperWidth = int(paperWidth)*4.1
+    paperHeight = int(paperHeight)*4
     # Define language
     if language == 'chinese':
-        return render(request,'label.html',{"paperName":paperName,"density":density,"paperSize":paperSize,"createdList":createdList})
+        return render(request,'label.html',{"paperName":paperName,"density":density,"paperSize":paperSize,"paperWidth":paperWidth,"paperHeight":paperHeight,"createdList":createdList})
     elif language == 'english':
-        return render(request,'label_en.html',{"paperName":paperName,"density":density,"paperSize":paperSize,"createdList":createdList})
+        return render(request,'label_en.html',{"paperName":paperName,"density":density,"paperWidth":paperWidth,"paperHeight":paperHeight,"createdList":createdList,"paperSize":paperSize})
     elif language == 'vietnamese':
-        return render(request,'label_vie.html',{"paperName":paperName,"density":density,"paperSize":paperSize,"createdList":createdList})
+        return render(request,'label_vie.html',{"paperName":paperName,"density":density,"paperWidth":paperWidth,"paperHeight":paperHeight,"createdList":createdList,"paperSize":paperSize})
 # 統合執行指令
 def integratedExecutionCommand(paperName="test",copy=1):
     global language
@@ -588,7 +612,8 @@ def integratedExecutionCommand(paperName="test",copy=1):
 
     for i in range(0,len(labelOfPaper)):
         detailOfLabel = labelMessage["%s"%paperName]["%s"%labelOfPaper[i]]
-    
+        
+        # 印文字
         if detailOfLabel["type"] == "文字":
             X = detailOfLabel["X"]
             Y = detailOfLabel["Y"]
@@ -599,16 +624,14 @@ def integratedExecutionCommand(paperName="test",copy=1):
                 tsclibrary.sendcommandW('TEXT '+str(X)+', '+str(Y)+',"'+str(size)+'", 0, 1, 1, "'+content+'"')
             elif language == 'chinese':
                 printCommand = 'TEXT '+str(X)+', '+str(Y)+',"FONT001", 0, '+str(size)+', '+str(size)+', "'+content+'"'
-                print('printCommand : ',printCommand)
                 bytes_code = bytes(printCommand, 'big5')
                 tsclibrary.sendcommand(bytes_code)
             elif language == 'vietnamese':
-                # printCommand = 'TEXT '+str(X)+', '+str(Y)+',"FONT001", 0, '+str(size)+', '+str(size)+', "'+content+'"'
-                # print('printCommand : ',printCommand)
-                # bytes_code = bytes(printCommand, 'utf-8')
-                # tsclibrary.sendcommand(bytes_code)
-                pass
+                printCommand = 'TEXT '+str(X)+', '+str(Y)+',"NotoSans.TTF", 0, '+str(size)+', '+str(size)+', "'+content+'"'
+                bytes_code = bytes(printCommand, 'utf-8')
+                tsclibrary.sendcommand(bytes_code)
 
+        # 印QRcode
         elif detailOfLabel["type"] == "QRcode":
             X = detailOfLabel["X"]
             Y = detailOfLabel["Y"]
@@ -618,7 +641,7 @@ def integratedExecutionCommand(paperName="test",copy=1):
             content = detailOfLabel["content"]
             # send QRcode command
             tsclibrary.sendcommandW('QRCODE '+str(X)+','+str(Y)+','+ECC+','+str(width)+',A,'+str(rotation)+',M2,S7,"'+content+'"')
-            
+        # 印營養標示
         else:
             X = detailOfLabel["X"]
             Y = detailOfLabel["Y"]
@@ -627,33 +650,37 @@ def integratedExecutionCommand(paperName="test",copy=1):
             optionList = list(detailOfLabel.keys())[5:]
             option = list(detailOfLabel.values())[5:]
             length = len(option)
+            # 營養標示文字
             if language == 'english':
-                # BOX
                 tsclibrary.sendcommandW('TEXT '+str(X+80)+','+str(Y+20)+',"FONT001",0,1,1,"Nutrition Facts"')
             elif language == 'chinese':
-                # BOX
-                printCommand = 'TEXT '+str(X+80)+','+str(Y+20)+',"FONT001",0,1,1,"營養標示"'
+                printCommand = 'TEXT '+str(X+180)+','+str(Y+20)+',"FONT001",0,1,1,"營養標示"'
                 bytes_code = bytes(printCommand, 'big5')
                 tsclibrary.sendcommand(bytes_code)
+            # 要改的地方
             elif language == 'vietnamese':
-                pass
+                printCommand = 'TEXT '+str(X+180)+','+str(Y+20)+',"NotoSans.TTF",0,7,7,"營養標示"'
+                bytes_code = bytes(printCommand, 'utf-8')
+                tsclibrary.sendcommand(bytes_code)
+
+            # 營養標示框框
             tsclibrary.sendcommandW('BOX '+str(X)+', '+str(Y)+', '+str(X+400)+', '+str(Y+50)+', 1')
             tsclibrary.sendcommandW('BOX '+str(X)+', '+str(Y+50)+', '+str(X+400)+', '+str(Y+110)+', 1')
             tsclibrary.sendcommandW('BOX '+str(X)+', '+str(Y+110)+', '+str(X+400)+', '+str(Y+150)+', 1')
             tsclibrary.sendcommandW('BOX '+str(X)+', '+str(Y+150)+', '+str(X+400)+', '+str(Y+160+25*length)+', 1')
 
-            # serving size
+            # 每份&每100公克的文字
             if language == 'english':
                 tsclibrary.sendcommandW('TEXT '+str(X+10)+', '+str(Y+60)+',"FONT001", 0, 1, 1, "Servings size    ('+str(weight)+'g)"')
                 tsclibrary.sendcommandW('TEXT '+str(X+10)+', '+str(Y+85)+',"FONT001", 0, 1, 1, "'+str(servings)+' servings per container"')
                 print('TEXT '+str(X+10)+', '+str(Y+85)+',"FONT001", 0, 1, 1, "'+str(servings)+' servings per container"')
                 tsclibrary.sendcommandW('TEXT '+str(X+150)+', '+str(Y+120)+',"FONT001", 0, 1, 1, "Per Serving"')
-                tsclibrary.sendcommandW('TEXT '+str(X+270)+', '+str(Y+120)+',"FONT001", 0, 1, 1, "Per 100g"')
+                tsclibrary.sendcommandW('TEXT '+str(X+300)+', '+str(Y+120)+',"FONT001", 0, 1, 1, "Per 100g"')
             elif language == 'chinese':
                 eachCommand = 'TEXT '+str(X+10)+', '+str(Y+60)+',"FONT001", 0, 1, 1, "每一份量 '+str(weight)+'公克"'
                 thisCommand = 'TEXT '+str(X+10)+', '+str(Y+85)+',"FONT001", 0, 1, 1, "本包裝含 '+str(servings)+'份"'
                 packCommand = 'TEXT '+str(X+200)+', '+str(Y+120)+',"FONT001", 0, 1, 1, "每份"'
-                gCommand = 'TEXT '+str(X+300)+', '+str(Y+120)+',"FONT001", 0, 1, 1, "每100公克"'
+                gCommand = 'TEXT '+str(X+280)+', '+str(Y+120)+',"FONT001", 0, 1, 1, "每100公克"'
                 eachBytes = bytes(eachCommand, 'big5')
                 thisBytes = bytes(thisCommand, 'big5')
                 packBytes = bytes(packCommand, 'big5')
@@ -662,40 +689,140 @@ def integratedExecutionCommand(paperName="test",copy=1):
                 tsclibrary.sendcommand(thisBytes)
                 tsclibrary.sendcommand(packBytes)
                 tsclibrary.sendcommand(gBytes)
+            #  要改的地方
             elif language == 'vietnamese':
-                pass
+                eachCommand = 'TEXT '+str(X+10)+', '+str(Y+60)+',"NotoSans.TTF", 0, 7, 7, "每一份量 '+str(weight)+'公克"'
+                thisCommand = 'TEXT '+str(X+10)+', '+str(Y+85)+',"NotoSans.TTF", 0, 7, 7, "本包裝含 '+str(servings)+'份"'
+                packCommand = 'TEXT '+str(X+200)+', '+str(Y+120)+',"NotoSans.TTF", 0, 7, 7, "每份"'
+                gCommand = 'TEXT '+str(X+280)+', '+str(Y+120)+',"NotoSans.TTF", 0, 7, 7, "每100公克"'
+                eachBytes = bytes(eachCommand, 'utf-8')
+                thisBytes = bytes(thisCommand, 'utf-8')
+                packBytes = bytes(packCommand, 'utf-8')
+                gBytes = bytes(gCommand, 'utf-8')
+                tsclibrary.sendcommand(eachBytes)
+                tsclibrary.sendcommand(thisBytes)
+                tsclibrary.sendcommand(packBytes)
+                tsclibrary.sendcommand(gBytes)
 
-            # option
+            # 營養標示內容
             """列印語言轉換"""
             with open("./printLabel/translate.json","r",encoding='utf-8') as jsonFile:
-                labelMessage = json.load(jsonFile)
-            key = list(labelMessage.keys())
+                translation = json.load(jsonFile)
+            key = list(translation.keys())
             optionList_in_language = []
             for l in range(0,len(optionList)):
                 if optionList[l] in key:
                     if language == 'english':
-                        optionList_in_language.append(labelMessage["%s"%optionList[l]][1])
+                        optionList_in_language.append(translation["%s"%optionList[l]][1])
                     elif language == 'chinese':
-                        optionList_in_language.append(labelMessage["%s"%optionList[l]][0])
+                        optionList_in_language.append(translation["%s"%optionList[l]][0])
                     elif language == 'vietnamese':
-                        optionList_in_language.append(labelMessage["%s"%optionList[l]][2])
-            print('optionList : ',optionList_in_language)
+                        optionList_in_language.append(translation["%s"%optionList[l]][2])
+            """"""""""""""""""""""""
             for l in range(0,len(option)):
+                # 熱量
                 if optionList[l] == 'calories':
-                    tsclibrary.sendcommandW('TEXT '+str(X+10)+', '+str(Y+160+25*l)+',"FONT001", 0, 1, 1, "'+optionList[l]+'"')
-                    tsclibrary.sendcommandW('TEXT '+str(X+200)+', '+str(Y+160+25*l)+',"FONT001", 0, 1, 1, "'+option[l]+'k"')
-                    tsclibrary.sendcommandW('TEXT '+str(X+300)+', '+str(Y+160+25*l)+',"FONT001", 0, 1, 1, "'+str(int(float(option[l])/weight*100))+'k"')
+                    # 熱量文字
+                    # 中文的字型也可以印英文的，所以英文跟中文可以寫一個就好
+                    if language == 'chinese' or language == 'english':
+                        printString = 'TEXT '+str(X+10)+', '+str(Y+160+25*l)+',"FONT001", 0, 1, 1, "'+optionList_in_language[l]+'"'
+                        bytes_code = bytes(printString, 'big5')
+                        tsclibrary.sendcommand(bytes_code)
+                    elif language == 'vietnamese':
+                        printString = 'TEXT '+str(X+10)+', '+str(Y+160+25*l)+',"NotoSans.TTF", 0, 7, 7, "'+optionList_in_language[l]+'"'
+                        bytes_code = bytes(printString, 'utf-8')
+                        tsclibrary.sendcommand(bytes_code)
+                    # 熱量的數值
+                    if language == 'chinese':
+                        # 每份的數值
+                        printString = 'TEXT '+str(X+200)+', '+str(Y+160+25*l)+',"FONT001", 0, 1, 1, "'+option[l]+'大卡"'
+                        bytes_code = bytes(printString, 'big5')
+                        tsclibrary.sendcommand(bytes_code)
+                        # 每100公克的數值
+                        printString = 'TEXT '+str(X+300)+', '+str(Y+160+25*l)+',"FONT001", 0, 1, 1, "'+str(int(float(option[l])/weight*100))+'大卡"'
+                        bytes_code = bytes(printString, 'big5')
+                        tsclibrary.sendcommand(bytes_code)
+                    # 除了中文的單位要寫中文，其他的好像都是英文單位
+                    else:
+                        tsclibrary.sendcommandW('TEXT '+str(X+200)+', '+str(Y+160+25*l)+',"FONT001", 0, 1, 1, "'+option[l]+'k"')
+                        tsclibrary.sendcommandW('TEXT '+str(X+300)+', '+str(Y+160+25*l)+',"FONT001", 0, 1, 1, "'+str(int(float(option[l])/weight*100))+'k"')
+                # 飽和脂肪、反式脂肪、糖要縮排
                 elif optionList[l] == 'saturated fat'or optionList[l] == 'trans fat' or optionList[l] == 'sugar':
-                    tsclibrary.sendcommandW('TEXT '+str(X+15)+', '+str(Y+160+25*l)+',"FONT001", 0, 1, 1, "'+optionList[l]+'"')
-                    tsclibrary.sendcommandW('TEXT '+str(X+200)+', '+str(Y+160+25*l)+',"FONT001", 0, 1, 1, "'+option[l]+'g"')
-                    tsclibrary.sendcommandW('TEXT '+str(X+300)+', '+str(Y+160+25*l)+',"FONT001", 0, 1, 1, "'+str(int(float(option[l])/weight*100))+'g"')
+                    # 飽和脂肪、反式脂肪、糖的文字
+                    # 中文的字型也可以印英文的，所以英文跟中文可以寫一個就好
+                    if language == 'chinese' or language == 'english':
+                        printString = 'TEXT '+str(X+15)+', '+str(Y+160+25*l)+',"FONT001", 0, 1, 1, "'+optionList_in_language[l]+'"'
+                        bytes_code = bytes(printString, 'big5')
+                        tsclibrary.sendcommand(bytes_code)
+                    elif language == 'vietnamese':
+                        printString = 'TEXT '+str(X+15)+', '+str(Y+160+25*l)+',"NotoSans.TTF", 0, 7, 7, "'+optionList_in_language[l]+'"'
+                        bytes_code = bytes(printString, 'utf-8')
+                        tsclibrary.sendcommand(bytes_code)
+                    # 飽和脂肪、反式脂肪、糖的數值
+                    if language == 'chinese':
+                        # 每份的數值
+                        printString = 'TEXT '+str(X+200)+', '+str(Y+160+25*l)+',"FONT001", 0, 1, 1, "'+option[l]+'公克"'
+                        bytes_code = bytes(printString, 'big5')
+                        tsclibrary.sendcommand(bytes_code)
+                        # 每100公克的數值
+                        printString = 'TEXT '+str(X+300)+', '+str(Y+160+25*l)+',"FONT001", 0, 1, 1, "'+str(int(float(option[l])/weight*100))+'公克"'
+                        bytes_code = bytes(printString, 'big5')
+                        tsclibrary.sendcommand(bytes_code)
+                    # 除了中文的單位要寫中文，其他的好像都是英文單位
+                    else:
+                        tsclibrary.sendcommandW('TEXT '+str(X+200)+', '+str(Y+160+25*l)+',"FONT001", 0, 1, 1, "'+option[l]+'g"')
+                        tsclibrary.sendcommandW('TEXT '+str(X+300)+', '+str(Y+160+25*l)+',"FONT001", 0, 1, 1, "'+str(int(float(option[l])/weight*100))+'g"')
+                # 鈉的單位是毫克
                 elif optionList[l] == 'sodium':
-                    tsclibrary.sendcommandW('TEXT '+str(X+10)+', '+str(Y+160+25*l)+',"FONT001", 0, 1, 1, "'+optionList[l]+'"')
-                    tsclibrary.sendcommandW('TEXT '+str(X+200)+', '+str(Y+160+25*l)+',"FONT001", 0, 1, 1, "'+option[l]+'mg"')
-                    tsclibrary.sendcommandW('TEXT '+str(X+300)+', '+str(Y+160+25*l)+',"FONT001", 0, 1, 1, "'+str(int(float(option[l])/weight*100))+'mg"')
+                    # 鈉的文字
+                    # 中文的字型也可以印英文的，所以英文跟中文可以寫一個就好
+                    if language == 'chinese' or language == 'english':
+                        printString = 'TEXT '+str(X+10)+', '+str(Y+160+25*l)+',"FONT001", 0, 1, 1, "'+optionList_in_language[l]+'"'
+                        bytes_code = bytes(printString, 'big5')
+                        tsclibrary.sendcommand(bytes_code)
+                    elif language == 'vietnamese':
+                        printString = 'TEXT '+str(X+10)+', '+str(Y+160+25*l)+',"NotoSans.TTF", 0, 7, 7, "'+optionList_in_language[l]+'"'
+                        bytes_code = bytes(printString, 'utf-8')
+                        tsclibrary.sendcommand(bytes_code)
+                    # 鈉的數值
+                    if language == 'chinese':
+                        # 每份的數值
+                        printString = 'TEXT '+str(X+200)+', '+str(Y+160+25*l)+',"FONT001", 0, 1, 1, "'+option[l]+'毫克"'
+                        bytes_code = bytes(printString, 'big5')
+                        tsclibrary.sendcommand(bytes_code)
+                        # 每100公克的數值
+                        printString = 'TEXT '+str(X+300)+', '+str(Y+160+25*l)+',"FONT001", 0, 1, 1, "'+str(int(float(option[l])/weight*100))+'毫克"'
+                        bytes_code = bytes(printString, 'big5')
+                        tsclibrary.sendcommand(bytes_code)
+                    # 除了中文的單位要寫中文，其他的好像都是英文單位
+                    else:
+                        tsclibrary.sendcommandW('TEXT '+str(X+200)+', '+str(Y+160+25*l)+',"FONT001", 0, 1, 1, "'+option[l]+'mg"')
+                        tsclibrary.sendcommandW('TEXT '+str(X+300)+', '+str(Y+160+25*l)+',"FONT001", 0, 1, 1, "'+str(int(float(option[l])/weight*100))+'mg"')
+                # 剩下不用縮排，單位是公克的營養素
                 else :
-                    tsclibrary.sendcommandW('TEXT '+str(X+10)+', '+str(Y+160+25*l)+',"FONT001", 0, 1, 1, "'+optionList[l]+'"')
-                    tsclibrary.sendcommandW('TEXT '+str(X+200)+', '+str(Y+160+25*l)+',"FONT001", 0, 1, 1, "'+option[l]+'g"')
-                    tsclibrary.sendcommandW('TEXT '+str(X+300)+', '+str(Y+160+25*l)+',"FONT001", 0, 1, 1, "'+str(int(float(option[l])/weight*100))+'g"')
+                    # 營養素的文字
+                    # 中文的字型也可以印英文的，所以英文跟中文可以寫一個就好
+                    if language == 'chinese' or language == 'english':
+                        printString = 'TEXT '+str(X+10)+', '+str(Y+160+25*l)+',"FONT001", 0, 1, 1, "'+optionList_in_language[l]+'"'
+                        bytes_code = bytes(printString, 'big5')
+                        tsclibrary.sendcommand(bytes_code)
+                    elif language == 'vietnamese':
+                        printString = 'TEXT '+str(X+10)+', '+str(Y+160+25*l)+',"NotoSans.TTF", 0, 7, 7, "'+optionList_in_language[l]+'"'
+                        bytes_code = bytes(printString, 'utf-8')
+                        tsclibrary.sendcommand(bytes_code)
+                    # 營養素的數值
+                    if language == 'chinese':
+                        # 每份的數值
+                        printString = 'TEXT '+str(X+200)+', '+str(Y+160+25*l)+',"FONT001", 0, 1, 1, "'+option[l]+'公克"'
+                        bytes_code = bytes(printString, 'big5')
+                        tsclibrary.sendcommand(bytes_code)
+                        # 每100公克的數值
+                        printString = 'TEXT '+str(X+300)+', '+str(Y+160+25*l)+',"FONT001", 0, 1, 1, "'+str(int(float(option[l])/weight*100))+'公克"'
+                        bytes_code = bytes(printString, 'big5')
+                        tsclibrary.sendcommand(bytes_code)
+                    # 除了中文的單位要寫中文，其他的好像都是英文單位
+                    else:
+                        tsclibrary.sendcommandW('TEXT '+str(X+200)+', '+str(Y+160+25*l)+',"FONT001", 0, 1, 1, "'+option[l]+'g"')
+                        tsclibrary.sendcommandW('TEXT '+str(X+300)+', '+str(Y+160+25*l)+',"FONT001", 0, 1, 1, "'+str(int(float(option[l])/weight*100))+'g"')
 
     tsclibrary.printlabelW("1",str(copy))  

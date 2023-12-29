@@ -58,7 +58,7 @@
         <button class="shape-ex11">回標籤頁</button>
     </a>
    
-    <canvas id="myCanvas" width="410" height="320" style="border:1px solid #000000; position:absolute; right:200px; top: 100px;"></canvas>
+    <canvas id="myCanvas" width={{paperWidth}}px height={{paperHeight}}px style="border:1px solid #000000; position:absolute; right:200px; top: 100px;"></canvas>
     <script>
         function confirmEdit(e){
             if (!confirm("確定要編輯嗎?")){
@@ -87,8 +87,8 @@
                         var content = response[k]["content"];
                         var x = response[k]["X"];
                         var y = response[k]["Y"];
-                        ctx.font = String(size*5+5)+"px Arial";
-                        ctx.fillText(content,x/1.9,y/2.1);
+                        ctx.font = String(size*8)+"px Arial";
+                        ctx.fillText(content,x/1.9,y/1.9);
                     }else if(response[k]["type"]=="QRcode"){
                         var width = response[k]["width"];
                         var name = k;
