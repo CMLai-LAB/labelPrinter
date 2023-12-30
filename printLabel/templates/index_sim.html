@@ -39,38 +39,38 @@
 
 <body>
     <div style="display: inline-block; position: absolute; left: 25%; top: 50px;">
-        <h1>Choose paper</h1>
+        <h1>选择标签</h1>
         {% for paper in papers %}
         <form action="/findLabel/" method="post">
             {% csrf_token %}
             <button class="shape-ex11" name="paperName" value="{{paper}}" style="display: inline-block;">{{paper}}</button>
-            <button name="paperName" value="delete{{paper}}" onclick="confirmDelete(event)" style="display: inline-block;">Delete</button>
+            <button name="paperName" value="delete{{paper}}" onclick="confirmDelete(event)" style="display: inline-block;">删除</button>
         </form>
         <br><br>
         {% endfor %}
     </div>
     
     <div style="display: inline-block; position: absolute; right: 25%; top: 50px;">
-        <h1>New paper</h1>
+        <h1>建立标签</h1>
         <p style="color: red;">{{warning}}</p>
         <form action="/setup/" method="post">
             {% csrf_token %}
-            Paper Name :
+            标签名称：
             <input type="text" name="paperName" required/>
             <br><br>
-            width :
+            纸张长度: 
             <input type="text" name="paperWidth" placeholder="mm" required/>
             <br><br>
-            Height : 
+            纸张宽度: 
             <input type="text" name="paperHeight" placeholder="mm" required/>
             <br><br>
-            Density : 
+            印刷浓度: 
             <input type="text" name="density" placeholder="0~15" required/>
             <br><br>
             <!-- DPI : 
             <input type="text" name="DPI" placeholder="200、300" required/>
             <br><br> -->
-            <button type="submit" name="setup">Create</button>
+            <button type="submit" name="setup">建立标签</button>
         </form>
     </div>
     <div class="container">
@@ -79,8 +79,8 @@
             {% csrf_token %}
             <select name="language" style="padding-right: 10px;" onchange="submit()">
                 <option value="chinese">繁體中文</option>
-                <option value="simple">简体中文</option>
-                <option value="english" selected="selected">English</option>
+                <option value="simple" selected="selected">简体中文</option>
+                <option value="english">English</option>
                 <option value="vietnamese">Tiếng Việt</option>
             </select>
         </form>
@@ -88,10 +88,10 @@
       
     <script>
         function confirmDelete(e){
-            if (!confirm("Are you sure to delete?")){
+            if (!confirm("确定要删除吗?")){
                 e.preventDefault();
             }else{
-                alert("Delete successfully!");
+                alert("删除成功");
             }
         }
     </script>

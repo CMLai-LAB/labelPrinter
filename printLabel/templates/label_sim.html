@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Print Label</title>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+    {% load static %}
+    <link rel="stylesheet" type="text/css" href="{% static 'printLabel/css/button.css' %}">
+</head>
+<body>
+    <h1>{{paperName}}</h1>
+    <h3>纸张大小 : {{paperSize}}</h3>
+    <h3>印刷浓度 : {{density}}</h3>
+
+    <a href="/textSettings">
+        <button>新增文字</button>
+    </a>
+    <br><br>
+
+    <a href="/qrSettings">
+        <button>新增QRcode</button>
+    </a>
+    <br><br>
+
+    <a href="/nutritionOption">
+        <button>新增营养标示</button>   
+    </a>
+    <br><br>
+
+    <a href="/printSettings">
+        <button>列印</button>
+    </a>
+    <br><br>
+    <p id="positon" style="display: none;">{{positionDict}}</p> 
+
+    <h3>
+        ---------------------------------------
+    </h3>  
+    <h2>已建立 : </h2>
+
+    {% for item, type in createdList.items %}
+        {{item}} ({{type}})
+
+        <!-- 刪除按鈕 -->
+        <form  style="display: inline-block;" action="/deleteItem/" method="post">
+            {% csrf_token %}
+            <button name="deleteItemButton" value="{{item}}" onclick="confirmDelete(event)">删除</button>
+        </form>
+        &nbsp;
+        <!-- 編輯按鈕 -->
+        <form style="display: inline-block;" action="/detail/" method="post">
+            {% csrf_token %} 
+            <button type="submit" name="editButton" value="{{item}}" onclick="confirmEdit(event)">查看细节</button>
+        </form>
+        <br><br>
+    {% endfor %}
+   
+    <a href="/">
+        <button class="shape-ex11">回标签页</button>
+    </a>
+   
+    <canvas id="myCanvas" width={{paperWidth}}px height={{paperHeight}}px style="border:1px solid #000000; position:absolute; right:200px; top: 100px;"></canvas>
+    <script>
+        function confirmEdit(e){
+            if (!confirm("确定要编辑吗?")){
+                e.preventDefault();
+            }
+        }
+        function confirmDelete(e){
+            if (!confirm("确定要删除吗?")){
+                e.preventDefault();
+            }else{
+                alert("删除成功");
+            }
+        }
+        var canvas = document.getElementById("myCanvas");
+        var ctx = canvas.getContext("2d");
+        $.ajax({
+            url: "/drawOnHtml",
+            type: "GET",
+            data: {
+                "message": "hello"
+            },
+            success: function(response){
+                for (k in response){
+                    if (response[k]["type"]=="文字"){
+                        var size = response[k]["size"];
+                        var content = response[k]["content"];
+                        var x = response[k]["X"];
+                        var y = response[k]["Y"];
+                        ctx.font = String(size*8)+"px Arial";
+                        ctx.fillText(content,x/1.9,y/1.9);
+                    }else if(response[k]["type"]=="QRcode"){
+                        var width = response[k]["width"];
+                        var name = k;
+                        var x = response[k]["X"] / 2;
+                        var y = response[k]["Y"] / 2;
+                        ctx.font = "10px Arial";
+                        ctx.fillText("QRcode:",x+width*5,y+width*10);
+                        ctx.fillText("("+k+")",x+width*8,y+width*15);
+                        ctx.rect(x,y,25*width,25*width);
+                        ctx.stroke();
+
+                    }else if(response[k]["type"]=="營養標籤"){
+                        var x = response[k]["X"] / 2;
+                        var y = response[k]["Y"] / 2.3;
+                        var weight = response[k]["weight"].toString();
+                        var servings = response[k]["servings"].toString();
+                        var length = Object.keys(response[k]).length - 5;
+                        // 最大方形
+                        ctx.rect(x,y,200,80+length*16);
+                        ctx.stroke();
+                        // 最大方形內第一條線
+                        ctx.moveTo(x,y+25);
+                        ctx.lineTo(x+200,y+25);
+                        ctx.stroke();
+                        // 最大方形內大二條線
+                        ctx.moveTo(x,y+60);
+                        ctx.lineTo(x+200,y+60);
+                        ctx.stroke();
+                        // 最大方形內第三條線
+                        ctx.moveTo(x,y+80);
+                        ctx.lineTo(x+200,y+80);
+                        ctx.stroke();
+                        // Nutritions Facts
+                        ctx.font = "11px Arial";
+                        ctx.fillText("营养标示",x+75,y+18);
+                        //  Servings Per Container
+                        ctx.font = "11px Arial";
+                        ctx.fillText('每一份量 '+weight+'公克',x+5,y+40);
+                        // servings size
+                        ctx.font = "11px Arial";
+                        ctx.fillText('本包装含 '+servings+'份',x+5,y+55);
+                        // 1 pack
+                        ctx.font = "11px Arial";
+                        ctx.fillText("每份",x+100,y+75);
+                        // 100g
+                        ctx.font = "11px Arial";
+                        ctx.fillText("每100公克",x+145,y+75);
+                        // 營養標籤內容
+                        var count = 1;
+                        for (m in response[k]){
+                            if (m != "type" && m != "X" && m != "Y" && m != "weight" && m != "servings"){
+                                console.log(response[k][m]);
+                                if (m == "calories"){
+                                    ctx.fillText(response[k][m]+"大卡",x+95,y+3+count*15);
+                                    ctx.fillText(parseInt(response[k][m]/Number(weight)*100).toString()+"大卡",x+150,y+3+count*15);
+                                    m = "热量";
+                                    ctx.fillText(m,x+3,y+3+count*15);
+                                }else if(m == "saturated fat" | m =="trans fat" | m == "sugar"){
+                                    ctx.fillText(response[k][m]+"公克",x+95,y+3+count*15);
+                                    ctx.fillText(parseInt(response[k][m]/Number(weight)*100).toString()+"公克",x+150,y+3+count*15);
+                                    if (m == "saturated fat"){
+                                        m = "饱和脂肪";
+                                    }else if (m == "trans fat"){
+                                        m = "反式脂肪";
+                                    }else{
+                                        m = "糖";
+                                    }
+                                    ctx.fillText(m,x+15,y+3+count*15);
+                                    
+                                }else if(m == "sodium"){
+                                    ctx.fillText(response[k][m]+"毫克",x+95,y+5+count*15);
+                                    ctx.fillText(parseInt(response[k][m]/Number(weight)*100).toString()+"毫克",x+150,y+3+count*15);
+                                    m = "钠";
+                                    ctx.fillText(m,x+3,y+3+count*15);
+
+                                }else{
+                                    ctx.fillText(response[k][m]+"公克",x+95,y+3+count*15);
+                                    ctx.fillText(parseInt(response[k][m]/Number(weight)*100).toString()+"公克",x+150,y+3+count*15);
+                                    if (m == "protein"){
+                                        m = "蛋白质";
+                                    }else if (m == "fat"){
+                                        m = "脂肪";
+                                    }else if (m == "carbohydrate"){
+                                        m = "碳水化合物";
+                                    }else if (m == "cholesterol"){
+                                        m = "胆固醇";
+                                    }else if (m == "amino"){
+                                        m = "氨基酸";
+                                    }else if (m == "vitamins"){
+                                        m = "维生素";
+                                    }else if (m == "minerals"){
+                                        m = "矿物质";
+                                    }else if (m == "dietary fiber"){
+                                        m = "膳食纤维";
+                                    }else if (m == "potassium"){
+                                        m = "钾";
+                                    }else if (m == "calcium"){
+                                        m = "钙";
+                                    }else if (m == "iron"){
+                                        m = "铁";
+                                    }
+                                    
+                                    ctx.fillText(m,x+3,y+3+count*15);
+                                }
+                                
+                            }
+                            count += 1;
+                        }
+                    }
+                }    
+            },
+            error: function(error){
+                console.log(error);
+            }
+        });
+
+    </script>
+</body>
+</html>

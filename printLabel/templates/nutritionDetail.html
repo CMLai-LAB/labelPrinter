@@ -13,9 +13,9 @@
         <h3 style="display: inline-block;">每一份量 <input type="text" name="weight" placeholder="{{weight}}" value="{{weight}}" required></h3> <p style="display: inline-block;">克</p><br>
         <h3 style="display: inline-block;">本包裝含 <input type="text" name="servings" placeholder="{{servings}}" value="{{servings}}" required></h3> <p style="display: inline-block;">份</p><br>
         {% for options ,value in option.items %} 
-            {% if options == "鈉"%}
+            {% if options == "sodium"%}
                 <h3 style="display: inline-block;">鈉 <input type="text" name="options" placeholder={{value}} value="{{value}}" required></h3> <p style="display: inline-block;">毫克</p><br>
-            {% elif options == "heat" %}
+            {% elif options == "calories" %}
                 <h3 style="display: inline-block;">熱量 <input type="text" name="options" placeholder="{{value}}" value="{{value}}" required></h3> <p style="display: inline-block;">大卡</p><br>
             {% else %}
                 <h3 style="display: inline-block;">{{options}} <input type="text" name="options" placeholder="{{value}}" value="{{value}}" required></h3> <p style="display: inline-block;">公克</p><br>

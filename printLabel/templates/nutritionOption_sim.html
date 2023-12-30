@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>设定营养标示</title>
+</head>
+<body>
+    <h1>营养标签设定</h1>
+    <form action="/nutritionSettings/" method="post">
+        {% csrf_token %}
+        <h3>八大标示</h3>
+        <input type="checkbox" value="calories" name="option">热量
+        <input type="checkbox" value="protein" name="option">蛋白质
+        <input type="checkbox" value="fat" name="option">脂肪
+        <input type="checkbox" value="saturated fat" name="option">饱和脂肪 <br><br>
+        <input type="checkbox" value="trans fat" name="option">反式脂肪
+        <input type="checkbox" value="carbohydrate" name="option">碳水化合物
+        <input type="checkbox" value="sugar" name="option">糖
+        <input type="checkbox" value="sodium" name="option">钠
+        <p>_____________________________________</p>
+        <h3>自愿标示</h3>
+        <input type="checkbox" value="cholesterol" name="option">胆固醇
+        <input type="checkbox" value="amino" name="option">胺基酸
+        <input type="checkbox" value="vitamins" name="option">维生素
+        <input type="checkbox" value="minerals" name="option">矿物质 <br><br>
+        <input type="checkbox" value="dietary fiber" name="option">膳食纤维
+        <input type="checkbox" value="potassium" name="option">钾
+        <input type="checkbox" value="calcium" name="option">钙
+        <input type="checkbox" value="iron" name="option">铁 <br><br>
+        <button type="submit">确认</button>
+    </form>
+</body>
+</html>

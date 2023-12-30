@@ -55,6 +55,8 @@ def setup(request):
         return render(request,'label_en.html',{"paperName":paperName,"density":density,"paperSize":paperSize,"paperWidth":paperWidth,"paperHeight":paperHeight})
     elif language == 'vietnamese':
         return render(request,'label_vie.html',{"paperName":paperName,"density":density,"paperSize":paperSize,"paperWidth":paperWidth,"paperHeight":paperHeight})
+    elif language == 'simple':
+        return render(request,'label_sim.html',{"paperName":paperName,"density":density,"paperSize":paperSize,"paperWidth":paperWidth,"paperHeight":paperHeight})
 
 """setup 列印設定
 - paperWidth : 紙張寬度
@@ -94,7 +96,7 @@ def nutritionFacts(request):
             for j in range(0,len(chinese)):
                 if optionList[i] == chinese[j]:
                     optionList[i] = list(translate.keys())[j]
-    print(optionList)
+  
     # 把營養標籤的內容存到json檔
     for i in range(0,len(option)):
         labelMessage["%s"%paperName]["%s"%nutritionName].update({"%s"%optionList[i]:option[i]})
@@ -132,6 +134,8 @@ def nutritionFacts(request):
         return render(request,'label_en.html',{"paperName":paperName,"paperWidth":paperWidth,"paperHeight":paperHeight,"paperSize":paperSize,"density":density,"createdList":createdList})
     elif language == 'vietnamese':
         return render(request,'label_vie.html',{"paperName":paperName,"paperWidth":paperWidth,"paperHeight":paperHeight,"paperSize":paperSize,"density":density,"createdList":createdList})
+    elif language == 'simple':
+        return render(request,'label_sim.html',{"paperName":paperName,"paperWidth":paperWidth,"paperHeight":paperHeight,"paperSize":paperSize,"density":density,"createdList":createdList})
 
 def qrCode(request):
     global language
@@ -183,6 +187,8 @@ def qrCode(request):
         return render(request,'label_en.html',{"paperName":paperName,"paperWidth":paperWidth,"paperHeight":paperHeight,"paperSize":paperSize,"density":density,"createdList":createdList})
     elif language == 'vietnamese':
         return render(request,'label_vie.html',{"paperName":paperName,"paperWidth":paperWidth,"paperHeight":paperHeight,"paperSize":paperSize,"density":density,"createdList":createdList})
+    elif language == 'simple':
+        return render(request,'label_sim.html',{"paperName":paperName,"paperWidth":paperWidth,"paperHeight":paperHeight,"paperSize":paperSize,"density":density,"createdList":createdList})
     
 def text(request):
     global language
@@ -234,6 +240,8 @@ def text(request):
         return render(request,'label_en.html',{"paperName":paperName,"paperWidth":paperWidth,"paperHeight":paperHeight,"paperSize":paperSize,"density":density,"createdList":createdList})
     elif language == 'vietnamese':
         return render(request,'label_vie.html',{"paperName":paperName,"paperWidth":paperWidth,"paperHeight":paperHeight,"paperSize":paperSize,"density":density,"createdList":createdList})
+    elif language == 'simple':
+        return render(request,'label_vie.html',{"paperName":paperName,"paperWidth":paperWidth,"paperHeight":paperHeight,"paperSize":paperSize,"density":density,"createdList":createdList})
 
 def startPrint(request):
     global language
@@ -245,6 +253,8 @@ def startPrint(request):
         return render(request,'finishPrint_en.html')
     elif language == 'vietnamese':
         return render(request,'finishPrint_vie.html')
+    elif language == 'simple':
+        return render(request,'finishPrint_sim.html')
 
 def index_en(request):
     global language
@@ -281,8 +291,10 @@ def index(request):
         return render(request,'index_en.html',{"papers":papers})
     elif language == 'vietnamese':
         return render(request,'index_vie.html',{"papers":papers})
-    return render(request,'index.html',{"papers":papers})
-
+    elif language == 'chinese':
+        return render(request,'index.html',{"papers":papers})
+    elif language == 'simple':
+        return render(request,'index_sim.html',{"papers":papers})
 def textSettings(request):
     global language
     if language == 'chinese':
@@ -291,6 +303,8 @@ def textSettings(request):
         return render(request,'textSettings_en.html',{"X":"X","Y":"Y"})
     elif language == 'vietnamese':
         return render(request,'textSettings_vie.html',{"X":"X","Y":"Y"})
+    elif language == 'simple':
+        return render(request,'textSettings_sim.html',{"X":"X","Y":"Y"})
 
 def qrSettings(request):
     global language
@@ -300,6 +314,8 @@ def qrSettings(request):
         return render(request,'qrSettings_en.html')
     elif language == 'vietnamese':
         return render(request,'qrSettings_vie.html')
+    elif language == 'simple':
+        return render(request,'qrSettings_sim.html')
 
 def printSettings(request):
     global language
@@ -309,6 +325,8 @@ def printSettings(request):
         return render(request,'printSettings_en.html')
     elif language == 'vietnamese':
         return render(request,'printSettings_vie.html')
+    elif language == 'simple':
+        return render(request,'printSettings_sim.html')
     
 def restart(request):
     global language
@@ -327,6 +345,8 @@ def restart(request):
         return render(request,'index_en.html',{"papers":papers})
     elif language == 'vietnamese':
         return render(request,'index_vie.html',{"papers":papers})
+    elif language == 'simple':
+        return render(request,'index_sim.html',{"papers":papers})
 
 
 def nutritionOption(request):
@@ -337,6 +357,8 @@ def nutritionOption(request):
         return render(request,'nutritionOption_en.html')
     elif language == 'vietnamese':
         return render(request,'nutritionOption_vie.html')
+    elif language == 'simple':
+        return render(request,'nutritionOption_sim.html')
 
 def nutritionSettings(request):
     global language
@@ -373,6 +395,16 @@ def nutritionSettings(request):
                 optionTitles.append(vietnamese[i])
         options = dict(zip(optionValues,optionTitles))
         return render(request,'nutritionFacts_vie.html',{"options":options})
+    elif language == 'simple':
+        simple = []
+        for lan in labelMessage.values():
+            simple.append(lan[3])
+        for i in range(0,len(optionValues)):
+            if optionValues[i] in key:
+                optionTitles.append(simple[i])
+        options = dict(zip(optionValues,optionTitles))
+        return render(request,'nutritionFacts_sim.html',{"options":options})
+
     
 def drawOnHtml(request):
     if request.method == 'GET':
@@ -435,6 +467,8 @@ def deleteItem(request):
         return render(request,'label_en.html',{"paperName":paperName,"paperWidth":paperWidth,"paperHeight":paperHeight,"paperSize":paperSize,"density":density,"createdList":createdList})
     elif language == 'vietnamese':
         return render(request,'label_vie.html',{"paperName":paperName,"paperWidth":paperWidth,"paperHeight":paperHeight,"paperSize":paperSize,"density":density,"createdList":createdList})
+    elif language == 'simple':
+        return render(request,'label_sim.html',{"paperName":paperName,"paperWidth":paperWidth,"paperHeight":paperHeight,"paperSize":paperSize,"density":density,"createdList":createdList})
 
 def detail(request):
     global language
@@ -466,6 +500,8 @@ def detail(request):
             return render(request,'textDetail_en.html',{"itemName":itemName,"size":size,"content":content,"X":X,"Y":Y})
         elif language == 'vietnamese':
             return render(request,'textDetail_vie.html',{"itemName":itemName,"size":size,"content":content,"X":X,"Y":Y})
+        elif language == 'simple':
+            return render(request,'textDetail_sim.html',{"itemName":itemName,"size":size,"content":content,"X":X,"Y":Y})
     
     elif itemType == "QRcode":
         X = labelMessage["%s"%paperName]["%s"%itemName]["X"] //8
@@ -491,6 +527,8 @@ def detail(request):
             return render(request,'qrDetail_en.html',{"itemName":itemName,"content":content,"X":X,"Y":Y,"ECC":ECC,"width":width,"rotation":rotation})
         elif language == 'vietnamese':
             return render(request,'qrDetail_vie.html',{"itemName":itemName,"content":content,"X":X,"Y":Y,"ECC":ECC,"width":width,"rotation":rotation})
+        elif language == 'simple':
+            return render(request,'qrDetail_sim.html',{"itemName":itemName,"content":content,"X":X,"Y":Y,"ECC":ECC,"width":width,"rotation":rotation})
     
     elif itemType == "營養標籤":
         option = list(labelMessage["%s"%paperName]["%s"%itemName].keys())[5:]
@@ -535,6 +573,13 @@ def detail(request):
             option = dict(zip(option,optionValue))
 
             return render(request,'nutritionDetail_vie.html',{"itemName":itemName,"option":option,"X":X,"Y":Y,"weight":weight,"servings":servings})
+        elif language == 'simple':
+            for i in range(0,len(option)):
+                if option[i] in key:
+                    option[i] = labelMessage["%s"%option[i]][3]
+            option = dict(zip(option,optionValue))
+
+            return render(request,'nutritionDetail_sim.html',{"itemName":itemName,"option":option,"X":X,"Y":Y,"weight":weight,"servings":servings})
     
 def findLabel(request):
     global paperName
@@ -560,6 +605,8 @@ def findLabel(request):
             return render(request,'index_en.html')
         elif language == 'vietnamese':
             return render(request,'index_vie.html')
+        elif language == 'simple':
+            return render(request,'index_sim.html')
     # 刪除
     if "delete" in paperName:
         paperName = paperName.replace("delete","") + ".json"
@@ -575,7 +622,14 @@ def findLabel(request):
         # 回傳index.html
         papers = os.listdir("./printLabel/commandTxt")
         if len(papers) == 0:
-            return render(request,'index.html')
+            if language == 'chinese':
+                return render(request,'index.html')
+            elif language == 'english':
+                return render(request,'index_en.html')
+            elif language == 'vietnamese':
+                return render(request,'index_vie.html')
+            elif language == 'simple':
+                return render(request,'index_sim.html')
         for i in range(0,len(papers)):
             if 'json' in papers[i]:
                 papers[i] = papers[i].replace('.json','')
@@ -586,6 +640,8 @@ def findLabel(request):
                 return render(request,'index_en.html',{"papers":papers})
             elif language == 'vietnamese':
                 return render(request,'index_vie.html',{"papers":papers})
+            elif language == 'simple':
+                return render(request,'index_sim.html',{"papers":papers})
         
     # 回傳label.html
     with open("./printLabel/commandTxt/"+str(paperName)+".json","r") as jsonFile:
@@ -616,6 +672,8 @@ def findLabel(request):
         return render(request,'label_en.html',{"paperName":paperName,"density":density,"paperWidth":paperWidth,"paperHeight":paperHeight,"createdList":createdList,"paperSize":paperSize})
     elif language == 'vietnamese':
         return render(request,'label_vie.html',{"paperName":paperName,"density":density,"paperWidth":paperWidth,"paperHeight":paperHeight,"createdList":createdList,"paperSize":paperSize})
+    elif language == 'simple':
+        return render(request,'label_sim.html',{"paperName":paperName,"density":density,"paperWidth":paperWidth,"paperHeight":paperHeight,"createdList":createdList,"paperSize":paperSize})
 # 統合執行指令
 def integratedExecutionCommand(paperName="test",copy=1):
     global language
@@ -641,8 +699,12 @@ def integratedExecutionCommand(paperName="test",copy=1):
                 bytes_code = bytes(printCommand, 'big5')
                 tsclibrary.sendcommand(bytes_code)
             elif language == 'vietnamese':
-                printCommand = 'TEXT '+str(X)+', '+str(Y)+',"NotoSans.TTF", 0, '+str(size)+', '+str(size)+', "'+content+'"'
+                printCommand = 'TEXT '+str(X)+', '+str(Y)+',"NotoSans.TTF", 0, '+str(size+7)+', '+str(size+7)+', "'+content+'"'
                 bytes_code = bytes(printCommand, 'utf-8')
+                tsclibrary.sendcommand(bytes_code)
+            elif language == 'simple':
+                printCommand = 'TEXT '+str(X)+', '+str(Y)+',"FONT002", 0, '+str(size)+', '+str(size)+', "'+content+'"'
+                bytes_code = bytes(printCommand, 'gbk')
                 tsclibrary.sendcommand(bytes_code)
 
         # 印QRcode
@@ -674,6 +736,10 @@ def integratedExecutionCommand(paperName="test",copy=1):
             elif language == 'vietnamese':
                 printCommand = 'TEXT '+str(X+180)+','+str(Y+20)+',"NotoSans.TTF",0,7,7,"Bảng giá trị dinh dưỡng"'
                 bytes_code = bytes(printCommand, 'utf-8')
+                tsclibrary.sendcommand(bytes_code)
+            elif language == 'simple':
+                printCommand = 'TEXT '+str(X+180)+','+str(Y+20)+',"FONT002",0,1,1,"营养标示"'
+                bytes_code = bytes(printCommand, 'gbk')
                 tsclibrary.sendcommand(bytes_code)
 
             # 營養標示框框
@@ -715,6 +781,20 @@ def integratedExecutionCommand(paperName="test",copy=1):
                 tsclibrary.sendcommand(thisBytes)
                 tsclibrary.sendcommand(packBytes)
                 tsclibrary.sendcommand(gBytes)
+            elif language == 'simple':
+                eachCommand = 'TEXT '+str(X+10)+', '+str(Y+60)+',"FONT002", 0, 1, 1, "每一分量 '+str(weight)+'公克"'
+                thisCommand = 'TEXT '+str(X+10)+', '+str(Y+85)+',"FONT002", 0, 1, 1, "本包装含 '+str(servings)+'份"'
+                packCommand = 'TEXT '+str(X+200)+', '+str(Y+120)+',"FONT002", 0, 1, 1, "每份"'
+                gCommand = 'TEXT '+str(X+280)+', '+str(Y+120)+',"FONT002", 0, 1, 1, "每100公克"'
+                eachBytes = bytes(eachCommand, 'gbk')
+                thisBytes = bytes(thisCommand, 'gbk')
+                packBytes = bytes(packCommand, 'gbk')
+                gBytes = bytes(gCommand, 'gbk')
+                tsclibrary.sendcommand(eachBytes)
+                tsclibrary.sendcommand(thisBytes)
+                tsclibrary.sendcommand(packBytes)
+                tsclibrary.sendcommand(gBytes)
+
 
             # 營養標示內容
             """列印語言轉換"""
@@ -730,6 +810,8 @@ def integratedExecutionCommand(paperName="test",copy=1):
                         optionList_in_language.append(translation["%s"%optionList[l]][0])
                     elif language == 'vietnamese':
                         optionList_in_language.append(translation["%s"%optionList[l]][2])
+                    elif language == 'simple':
+                        optionList_in_language.append(translation["%s"%optionList[l]][3])
             """"""""""""""""""""""""
             for l in range(0,len(option)):
                 # 熱量
@@ -743,6 +825,10 @@ def integratedExecutionCommand(paperName="test",copy=1):
                     elif language == 'vietnamese':
                         printString = 'TEXT '+str(X+10)+', '+str(Y+160+25*l)+',"NotoSans.TTF", 0, 7, 7, "'+optionList_in_language[l]+'"'
                         bytes_code = bytes(printString, 'utf-8')
+                        tsclibrary.sendcommand(bytes_code)
+                    elif language == 'simple':
+                        printString = 'TEXT '+str(X+10)+', '+str(Y+160+25*l)+',"FONT002", 0, 1, 1, "'+optionList_in_language[l]+'"'
+                        bytes_code = bytes(printString, 'gbk')
                         tsclibrary.sendcommand(bytes_code)
                     # 熱量的數值
                     if language == 'chinese':
@@ -770,6 +856,11 @@ def integratedExecutionCommand(paperName="test",copy=1):
                         printString = 'TEXT '+str(X+15)+', '+str(Y+160+25*l)+',"NotoSans.TTF", 0, 7, 7, "'+optionList_in_language[l]+'"'
                         bytes_code = bytes(printString, 'utf-8')
                         tsclibrary.sendcommand(bytes_code)
+                    elif language == 'simple':
+                        printString = 'TEXT '+str(X+15)+', '+str(Y+160+25*l)+',"FONT002", 0, 1, 1, "'+optionList_in_language[l]+'"'
+                        bytes_code = bytes(printString, 'gbk')
+                        tsclibrary.sendcommand(bytes_code)
+
                     # 飽和脂肪、反式脂肪、糖的數值
                     if language == 'chinese':
                         # 每份的數值
@@ -796,6 +887,10 @@ def integratedExecutionCommand(paperName="test",copy=1):
                         printString = 'TEXT '+str(X+10)+', '+str(Y+160+25*l)+',"NotoSans.TTF", 0, 7, 7, "'+optionList_in_language[l]+'"'
                         bytes_code = bytes(printString, 'utf-8')
                         tsclibrary.sendcommand(bytes_code)
+                    elif language == 'simple':
+                        printString = 'TEXT '+str(X+10)+', '+str(Y+160+25*l)+',"FONT002", 0, 1, 1, "'+optionList_in_language[l]+'"'
+                        bytes_code = bytes(printString, 'gbk')
+                        tsclibrary.sendcommand(bytes_code)
                     # 鈉的數值
                     if language == 'chinese':
                         # 每份的數值
@@ -821,6 +916,10 @@ def integratedExecutionCommand(paperName="test",copy=1):
                     elif language == 'vietnamese':
                         printString = 'TEXT '+str(X+10)+', '+str(Y+160+25*l)+',"NotoSans.TTF", 0, 7, 7, "'+optionList_in_language[l]+'"'
                         bytes_code = bytes(printString, 'utf-8')
+                        tsclibrary.sendcommand(bytes_code)
+                    elif language == 'simple':
+                        printString = 'TEXT '+str(X+10)+', '+str(Y+160+25*l)+',"FONT002", 0, 1, 1, "'+optionList_in_language[l]+'"'
+                        bytes_code = bytes(printString, 'gbk')
                         tsclibrary.sendcommand(bytes_code)
                     # 營養素的數值
                     if language == 'chinese':
