@@ -8,25 +8,25 @@
     
     <form action="/nutritionFacts/" method="post">
         {% csrf_token %}
-        Tên giấy <input type="text" name="nutritionName" required/><br><br>
+        Tên nhãn <input type="text" name="nutritionName" required/><br><br>
         
         Vị trí <input type="text" name="nutritionX" placeholder="X mm" required/><nbsp>
         <input type="text" name="nutritionY" placeholder="Y mm" required/><br><br>
         
-        Mỗi phần chứa <input type="text" name="weight" placeholder="trọng lượng(g)" required/><br><br>
+        Mỗi phần chứa <input type="text" name="weight" placeholder="(g)" required/><br><br>
         
-        Gói này chứa <input type="text" name="servings" placeholder="phần" required/><br><br>
+        Gói này chứa <input type="text" name="servings" placeholder="khẩu phần ăn" required/><br><br>
         <!--  heat, portain, fat, saturated, trans, carbohydrate, sugar, sodium -->
         {% for option ,value in options.items %} 
             {% if option == "sodium"%}
-                sodium <nbsp><input type="text" name="options" placeholder=" mg" required><br><br>
-            {% elif option == "heat" %}
-                {{value}} <input type="text" name="options" placeholder=" k" required><br><br>
+                {{value}} <nbsp><input type="text" name="options" placeholder=" (mg)" required><br><br>
+            {% elif option == "calories" %}
+                {{value}} <input type="text" name="options" placeholder=" (kcal)" required><br><br>
             {% else %}
-                {{value}} <input type="text" name="options" placeholder=" g" required><br><br>
+                {{value}} <input type="text" name="options" placeholder=" (g)" required><br><br>
             {% endif %}
         {% endfor %}
-        <button type="submit" value="{{options}}" name="optionList">Add Nutrition Facts</button>
+        <button type="submit" value="{{options}}" name="optionList">Thêm nhãn dinh dưỡng</button>
     </form>
 </body>
 </html>

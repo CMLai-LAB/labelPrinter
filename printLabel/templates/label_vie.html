@@ -9,7 +9,7 @@
 <body>
     <h1>{{paperName}}</h1>
     <h3>Kích thước giấy : {{paperSize}}</h3>
-    <h3>Mật độ in : {{density}}</h3>
+    <h3>Độ đậm của bản in : {{density}}</h3>
 
     <a href="/textSettings">
         <button>Thêm văn bản</button>
@@ -27,7 +27,7 @@
     <br><br>
 
     <a href="/printSettings">
-        <button>In ấn</button>
+        <button>In</button>
     </a>
     <br><br>
 
@@ -63,7 +63,7 @@
     {% endfor %}
    
     <a href="/index_vie">
-        <button class="shape-ex11">Hoàn thành</button>
+        <button class="shape-ex11">Quay về trang chủ</button>
     </a>
    
     <canvas id="myCanvas" width="{{paperWidth}}" height="{{paperHeight}}" style="border:1px solid #000000; position:absolute; right:200px; top: 100px;"></canvas>
@@ -115,66 +115,66 @@
                         var servings = response[k]["servings"].toString();
                         var length = Object.keys(response[k]).length - 5;
                         // 最大方形
-                        ctx.rect(x,y,200,80+length*16);
+                        ctx.rect(x,y,220,80+length*16);
                         ctx.stroke();
                         // 最大方形內第一條線
                         ctx.moveTo(x,y+25);
-                        ctx.lineTo(x+200,y+25);
+                        ctx.lineTo(x+220,y+25);
                         ctx.stroke();
                         // 最大方形內大二條線
                         ctx.moveTo(x,y+60);
-                        ctx.lineTo(x+200,y+60);
+                        ctx.lineTo(x+220,y+60);
                         ctx.stroke();
                         // 最大方形內第三條線
                         ctx.moveTo(x,y+80);
-                        ctx.lineTo(x+200,y+80);
+                        ctx.lineTo(x+220,y+80);
                         ctx.stroke();
                         // Nutritions Facts
                         ctx.font = "11px Arial";
-                        ctx.fillText("Nhãn dinh dưỡng",x+75,y+18);
+                        ctx.fillText("Bảng giá trị dinh dưỡng",x+65,y+18);
                         //  Servings Per Container
                         ctx.font = "11px Arial";
-                        ctx.fillText('Mỗi phần chứa '+weight+'g',x+5,y+40);
+                        ctx.fillText('Mỗi một phần '+weight+'g',x+5,y+40);
                         // servings size
                         ctx.font = "11px Arial";
-                        ctx.fillText('Gói này chứa '+servings+' phần ăn',x+5,y+55);
+                        ctx.fillText('Gói này chứa '+servings+' khẩu phần ăn',x+5,y+55);
                         // 1 pack
                         ctx.font = "11px Arial";
-                        ctx.fillText("mỗi phần",x+85,y+75);
+                        ctx.fillText("Mỗi phần",x+110,y+75);
                         // 100g
                         ctx.font = "11px Arial";
-                        ctx.fillText("Mỗi 100g",x+150,y+75);
+                        ctx.fillText("Mỗi 100g",x+165,y+75);
                         // 營養標籤內容
                         var count = 1;
                         for (m in response[k]){
                             if (m != "type" && m != "X" && m != "Y" && m != "weight" && m != "servings"){
                                 console.log(response[k][m]);
                                 if (m == "calories"){
-                                    ctx.fillText(response[k][m]+" kcal",x+95,y+3+count*15);
-                                    ctx.fillText(parseInt(response[k][m]/Number(weight)*100).toString()+" kcal",x+150,y+3+count*15);
-                                    m = "Năng lượng";
+                                    ctx.fillText(response[k][m]+" k",x+125,y+3+count*15);
+                                    ctx.fillText(parseInt(response[k][m]/Number(weight)*100).toString()+" k",x+170,y+3+count*15);
+                                    m = "Năng lượn";
                                     ctx.fillText(m,x+3,y+3+count*15);
                                 }else if(m == "saturated fat" | m =="trans fat" | m == "sugar"){
-                                    ctx.fillText(response[k][m]+"g",x+95,y+3+count*15);
-                                    ctx.fillText(parseInt(response[k][m]/Number(weight)*100).toString()+"g",x+150,y+3+count*15);
+                                    ctx.fillText(response[k][m]+"g",x+125,y+3+count*15);
+                                    ctx.fillText(parseInt(response[k][m]/Number(weight)*100).toString()+"g",x+170,y+3+count*15);
                                     if (m == "saturated fat"){
-                                        m = "Chất béo no";
+                                        m = "Chất béo bão hòa";
                                     }else if (m == "trans fat"){
-                                        m = "Chất béo trans";
+                                        m = "Chất béo chuyển hóa";
                                     }else{
                                         m = "Đường";
                                     }
                                     ctx.fillText(m,x+10,y+3+count*15);
                                     
                                 }else if(m == "sodium"){
-                                    ctx.fillText(response[k][m]+"mg",x+95,y+5+count*15);
-                                    ctx.fillText(parseInt(response[k][m]/Number(weight)*100).toString()+"mg",x+150,y+3+count*15);
+                                    ctx.fillText(response[k][m]+"mg",x+125,y+5+count*15);
+                                    ctx.fillText(parseInt(response[k][m]/Number(weight)*100).toString()+"mg",x+170,y+3+count*15);
                                     m = "Natri";
                                     ctx.fillText(m,x+3,y+3+count*15);
 
                                 }else{
-                                    ctx.fillText(response[k][m]+"g",x+95,y+3+count*15);
-                                    ctx.fillText(parseInt(response[k][m]/Number(weight)*100).toString()+"g",x+150,y+3+count*15);
+                                    ctx.fillText(response[k][m]+"g",x+125,y+3+count*15);
+                                    ctx.fillText(parseInt(response[k][m]/Number(weight)*100).toString()+"g",x+170,y+3+count*15);
                                     if (m == "protein"){
                                         m = "Chất đạm";
                                     }else if (m == "fat"){
@@ -184,9 +184,9 @@
                                     }else if (m == "cholesterol"){
                                         m = "Cholesterol";
                                     }else if (m == "amino"){
-                                        m = "Amino";
+                                        m = "Axit amin";
                                     }else if (m == "vitamins"){
-                                        m = "Vitamins";
+                                        m = "Vitamin";
                                     }else if (m == "minerals"){
                                         m = "Khoáng chất";
                                     }else if (m == "dietary fiber"){

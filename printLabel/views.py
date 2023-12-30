@@ -122,13 +122,16 @@ def nutritionFacts(request):
 
     # 把標籤名稱跟累型合在一起
     createdList = dict(zip(createdList,typeList))
+    # 修正畫布大小
+    paperWidth = int(paperWidth)*4.1
+    paperHeight = int(paperHeight)*4
     # Define language
     if language == 'chinese':
-        return render(request,'label.html',{"paperName":paperName,"paperSize":paperSize,"density":density,"createdList":createdList})
+        return render(request,'label.html',{"paperName":paperName,"paperWidth":paperWidth,"paperHeight":paperHeight,"paperSize":paperSize,"density":density,"createdList":createdList})
     elif language == 'english':
-        return render(request,'label_en.html',{"paperName":paperName,"paperSize":paperSize,"density":density,"createdList":createdList})
+        return render(request,'label_en.html',{"paperName":paperName,"paperWidth":paperWidth,"paperHeight":paperHeight,"paperSize":paperSize,"density":density,"createdList":createdList})
     elif language == 'vietnamese':
-        return render(request,'label_vie.html',{"paperName":paperName,"paperSize":paperSize,"density":density,"createdList":createdList})
+        return render(request,'label_vie.html',{"paperName":paperName,"paperWidth":paperWidth,"paperHeight":paperHeight,"paperSize":paperSize,"density":density,"createdList":createdList})
 
 def qrCode(request):
     global language
@@ -169,14 +172,17 @@ def qrCode(request):
     
     # 把標籤名稱跟累型合在一起
     createdList = dict(zip(createdList,typeList))
+    # 修正畫布大小
+    paperWidth = int(paperWidth)*4.1
+    paperHeight = int(paperHeight)*4
 
     # Define language
     if language == 'chinese':
-        return render(request,'label.html',{"paperName":paperName,"paperSize":paperSize,"density":density,"createdList":createdList})
+        return render(request,'label.html',{"paperName":paperName,"paperWidth":paperWidth,"paperHeight":paperHeight,"paperSize":paperSize,"density":density,"createdList":createdList})
     elif language == 'english':
-        return render(request,'label_en.html',{"paperName":paperName,"paperSize":paperSize,"density":density,"createdList":createdList})
+        return render(request,'label_en.html',{"paperName":paperName,"paperWidth":paperWidth,"paperHeight":paperHeight,"paperSize":paperSize,"density":density,"createdList":createdList})
     elif language == 'vietnamese':
-        return render(request,'label_vie.html',{"paperName":paperName,"paperSize":paperSize,"density":density,"createdList":createdList})
+        return render(request,'label_vie.html',{"paperName":paperName,"paperWidth":paperWidth,"paperHeight":paperHeight,"paperSize":paperSize,"density":density,"createdList":createdList})
     
 def text(request):
     global language
@@ -218,12 +224,16 @@ def text(request):
 
     # 把標籤名稱跟累型合在一起
     createdList = dict(zip(createdList,typeList))
+    # 修正畫布大小
+    paperWidth = int(paperWidth)*4.1
+    paperHeight = int(paperHeight)*4
+    # Define language
     if language == 'chinese':
-        return render(request,'label.html',{"paperName":paperName,"paperSize":paperSize,"density":density,"createdList":createdList})
+        return render(request,'label.html',{"paperName":paperName,"paperWidth":paperWidth,"paperHeight":paperHeight,"paperSize":paperSize,"density":density,"createdList":createdList})
     elif language == 'english':
-        return render(request,'label_en.html',{"paperName":paperName,"paperSize":paperSize,"density":density,"createdList":createdList})
+        return render(request,'label_en.html',{"paperName":paperName,"paperWidth":paperWidth,"paperHeight":paperHeight,"paperSize":paperSize,"density":density,"createdList":createdList})
     elif language == 'vietnamese':
-        return render(request,'label_vie.html',{"paperName":paperName,"paperSize":paperSize,"density":density,"createdList":createdList})
+        return render(request,'label_vie.html',{"paperName":paperName,"paperWidth":paperWidth,"paperHeight":paperHeight,"paperSize":paperSize,"density":density,"createdList":createdList})
 
 def startPrint(request):
     global language
@@ -413,14 +423,18 @@ def deleteItem(request):
 
     # 把標籤名稱跟累型合在一起
     createdList = dict(zip(createdList,typeList))
+    # 修正畫布大小
+    paperWidth = int(paperWidth)*4.1
+    paperHeight = int(paperHeight)*4
+
 
     # Define language
     if language == 'chinese':
-        return render(request,'label.html',{"paperName":paperName,"paperSize":paperSize,"density":density,"createdList":createdList})
+        return render(request,'label.html',{"paperName":paperName,"paperWidth":paperWidth,"paperHeight":paperHeight,"paperSize":paperSize,"density":density,"createdList":createdList})
     elif language == 'english':
-        return render(request,'label_en.html',{"paperName":paperName,"paperSize":paperSize,"density":density,"createdList":createdList})
+        return render(request,'label_en.html',{"paperName":paperName,"paperWidth":paperWidth,"paperHeight":paperHeight,"paperSize":paperSize,"density":density,"createdList":createdList})
     elif language == 'vietnamese':
-        return render(request,'label_vie.html',{"paperName":paperName,"paperSize":paperSize,"density":density,"createdList":createdList})
+        return render(request,'label_vie.html',{"paperName":paperName,"paperWidth":paperWidth,"paperHeight":paperHeight,"paperSize":paperSize,"density":density,"createdList":createdList})
 
 def detail(request):
     global language
@@ -657,9 +671,8 @@ def integratedExecutionCommand(paperName="test",copy=1):
                 printCommand = 'TEXT '+str(X+180)+','+str(Y+20)+',"FONT001",0,1,1,"營養標示"'
                 bytes_code = bytes(printCommand, 'big5')
                 tsclibrary.sendcommand(bytes_code)
-            # 要改的地方
             elif language == 'vietnamese':
-                printCommand = 'TEXT '+str(X+180)+','+str(Y+20)+',"NotoSans.TTF",0,7,7,"營養標示"'
+                printCommand = 'TEXT '+str(X+180)+','+str(Y+20)+',"NotoSans.TTF",0,7,7,"Bảng giá trị dinh dưỡng"'
                 bytes_code = bytes(printCommand, 'utf-8')
                 tsclibrary.sendcommand(bytes_code)
 
@@ -689,12 +702,11 @@ def integratedExecutionCommand(paperName="test",copy=1):
                 tsclibrary.sendcommand(thisBytes)
                 tsclibrary.sendcommand(packBytes)
                 tsclibrary.sendcommand(gBytes)
-            #  要改的地方
             elif language == 'vietnamese':
-                eachCommand = 'TEXT '+str(X+10)+', '+str(Y+60)+',"NotoSans.TTF", 0, 7, 7, "每一份量 '+str(weight)+'公克"'
-                thisCommand = 'TEXT '+str(X+10)+', '+str(Y+85)+',"NotoSans.TTF", 0, 7, 7, "本包裝含 '+str(servings)+'份"'
-                packCommand = 'TEXT '+str(X+200)+', '+str(Y+120)+',"NotoSans.TTF", 0, 7, 7, "每份"'
-                gCommand = 'TEXT '+str(X+280)+', '+str(Y+120)+',"NotoSans.TTF", 0, 7, 7, "每100公克"'
+                eachCommand = 'TEXT '+str(X+10)+', '+str(Y+60)+',"NotoSans.TTF", 0, 7, 7, "Mỗi một phần '+str(weight)+'g"'
+                thisCommand = 'TEXT '+str(X+10)+', '+str(Y+85)+',"NotoSans.TTF", 0, 7, 7, "Gói này chứa '+str(servings)+'khẩu phần ăn"'
+                packCommand = 'TEXT '+str(X+200)+', '+str(Y+120)+',"NotoSans.TTF", 0, 7, 7, "Mỗi phần"'
+                gCommand = 'TEXT '+str(X+280)+', '+str(Y+120)+',"NotoSans.TTF", 0, 7, 7, "Mỗi 100g"'
                 eachBytes = bytes(eachCommand, 'utf-8')
                 thisBytes = bytes(thisCommand, 'utf-8')
                 packBytes = bytes(packCommand, 'utf-8')

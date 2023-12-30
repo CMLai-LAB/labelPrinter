@@ -39,7 +39,7 @@
 
 <body>
     <div style="display: inline-block; position: absolute; left: 25%; top: 50px;">
-        <h1>Chọn giấy</h1>
+        <h1>Chọn nhãn</h1>
         {% for paper in papers %}
         <form action="/findLabel/" method="post">
             {% csrf_token %}
@@ -51,20 +51,20 @@
     </div>
     
     <div style="display: inline-block; position: absolute; right: 25%; top: 50px;">
-        <h1>Tạo giấy</h1>
+        <h1>Tạo nhãn</h1>
         <p style="color: red;">{{warning}}</p>
         <form action="/setup/" method="post">
             {% csrf_token %}
-            Tên giấy :
+            Tên nhãn :
             <input type="text" name="paperName" required/>
             <br><br>
-            Dài : 
+            Chiều dài giấy : 
             <input type="text" name="paperWidth" placeholder="mm" required/>
             <br><br>
-            Rộng : 
+            Chiều rộng giấy : 
             <input type="text" name="paperHeight" placeholder="mm" required/>
             <br><br>
-            Độ đậm in : 
+            Độ đậm của bản in : 
             <input type="text" name="density" placeholder="0~15" required/>
             <br><br>
             <!-- DPI : 
