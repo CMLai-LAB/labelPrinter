@@ -769,8 +769,8 @@ def integratedExecutionCommand(paperName="test",copy=1):
                 tsclibrary.sendcommand(packBytes)
                 tsclibrary.sendcommand(gBytes)
             elif language == 'vietnamese':
-                eachCommand = 'TEXT '+str(X+10)+', '+str(Y+60)+',"NotoSans.TTF", 0, 7, 7, "Mỗi một phần '+str(weight)+'g"'
-                thisCommand = 'TEXT '+str(X+10)+', '+str(Y+85)+',"NotoSans.TTF", 0, 7, 7, "Gói này chứa '+str(servings)+'khẩu phần ăn"'
+                eachCommand = 'TEXT '+str(X+10)+', '+str(Y+60)+',"NotoSans.TTF", 0, 7, 7, "Mỗi một phần: '+str(weight)+'g"'
+                thisCommand = 'TEXT '+str(X+10)+', '+str(Y+85)+',"NotoSans.TTF", 0, 7, 7, "Số lượng khẩu phần: '+str(servings)+'"'
                 packCommand = 'TEXT '+str(X+200)+', '+str(Y+120)+',"NotoSans.TTF", 0, 7, 7, "Mỗi phần"'
                 gCommand = 'TEXT '+str(X+280)+', '+str(Y+120)+',"NotoSans.TTF", 0, 7, 7, "Mỗi 100g"'
                 eachBytes = bytes(eachCommand, 'utf-8')
