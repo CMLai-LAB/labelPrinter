@@ -5,7 +5,7 @@ metadata:
   labels:
     app: labelprinter
 spec:
-  type: ClusterIP
+  type: NodePort
   selector:
     app: labelprinter
   ports:
