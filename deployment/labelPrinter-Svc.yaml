@@ -10,3 +10,4 @@ spec:
     app: labelprinter
   ports:
     - port: 8000
+      targetPort: 8000
