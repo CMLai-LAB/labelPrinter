@@ -12,7 +12,7 @@ pipeline {
             steps {
                 dir('deployment') {
                     sh 'microk8s kubectl apply -f deployment.yaml -n labelprinter'
-                    sh 'microk8s kubectl apply -f labelPrinter-Svc.yaml -n laberprinter'
+                    sh 'microk8s kubectl apply -f labelPrinter-Svc.yaml -n labelprinter'
                     sh 'microk8s kubectl rollout restart deployment labelprinter -n labelprinter'
                 }
             }
