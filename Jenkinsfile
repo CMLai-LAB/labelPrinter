@@ -11,9 +11,9 @@ pipeline {
         stage('Deploy to the minikube') {
             steps {
                 dir('deployment') {
-                    sh 'microk8s kubectl apply -f deployment.yaml'
-                    sh 'microk8s kubectl apply -f labelPrinter-Svc.yaml'
-                    sh 'microk8s kubectl rollout restart deployment labelprinter'
+                    sh 'microk8s kubectl apply -f deployment.yaml -n labelprinter'
+                    sh 'microk8s kubectl apply -f labelPrinter-Svc.yaml -n laberprinter'
+                    sh 'microk8s kubectl rollout restart deployment labelprinter -n labelprinter'
                 }
             }
         }
