@@ -5,9 +5,8 @@ metadata:
   labels:
     app: labelprinter
 spec:
-  type: NodePort
+  type: ClusterIP
   selector:
     app: labelprinter
   ports:
     - port: 8000
-      targetPort: 8000
