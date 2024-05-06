@@ -154,8 +154,8 @@ def nutritionFacts(request):
 
 def qrCode(request):
     qrName = request.POST.get('qrName')
-    X = int(request.POST.get('qrX'))*8
-    Y = int(request.POST.get('qrY'))*8
+    X = float(request.POST.get('qrX'))*8
+    Y = float(request.POST.get('qrY'))*8
     ECC = request.POST.get('ECC')
     width = request.POST.get('width')
     rotation = request.POST.get('rotation')
@@ -199,8 +199,8 @@ def qrCode(request):
 
 def text(request):
     textName = request.POST.get('textName')
-    X = int(request.POST.get('textX'))*8
-    Y = int(request.POST.get('textY'))*8
+    X = float(request.POST.get('textX'))*8
+    Y = float(request.POST.get('textY'))*8
     size = request.POST.get('textSize')
     content = request.POST.get('textContent')
 
